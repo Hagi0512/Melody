@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.it.melody.mapper.UserMapper">
+
+    <insert id="addUser">
+        insert into users(username,password) values(#{username},#{password})
+    </insert>
+
+    <insert id="addFavoriteById">
+        insert into user_favorite_music(user_id,song_id) values(#{id},#{songId})
+    </insert>
+
+    <delete id="deleteFavoriteById">
+        delete from user_favorite_music
+        where user_id=#{id} and song_id=#{songId}
+    </delete>
+
+    <select id="getLikedSongsById" resultType="com.it.melody.pojo.Songs">
+        select songs.song_id,title,file_path,duration,artist,uploaded_at,album,cover_image
+        from songs join user_favorite_music on songs.song_id=user_favorite_music.song_id
+        where user_id=#{id}
+        order by created_at desc
+    </select>
+
+    <select id="getUserByNameAndPassword" resultType="com.it.melody.pojo.Login">
+        select user_id,username
+        from users
+        where username=#{username} and password=#{password}
+    </select>
+
+    <select id="getAllLikedSongsById" resultType="com.it.melody.pojo.Songs">
+        select songs.song_id,title,file_path,duration,artist,uploaded_at,album,cover_image
+        from songs join user_favorite_music on songs.song_id=user_favorite_music.song_id
+        where user_id= #{id}
+    </select>
+</mapper>

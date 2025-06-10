@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MelodyStream</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/mymusicstyle.css">
+</head>
+<body>
+<!-- 顶部导航栏 -->
+<nav class="navbar">
+    <div class="logo">
+        <i class="fas fa-music"></i>
+        <span>MelodyStream</span>
+    </div>
+
+    <ul class="nav-menu">
+        <li><a href="mymusic.html" class="active">我的音乐</a></li>
+    </ul>
+
+    <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchInput" placeholder="搜索音乐、歌手">
+    </div>
+
+
+    <div class="user-section">
+        <button><i class="fas fa-plus"></i> 创建歌单</button>
+        <div class="user-avatar">
+            <img id="userAvatar" src="./images/user.jpg" alt="用户头像">
+            <div class="dropdown-menu">
+                <div class="dropdown-header">
+                    <img src="./images/user.jpg" alt="用户头像">
+                    <div class="user-info">
+                        <div class="username" id="username-placeholder">undefined</div>
+                    </div>
+                </div>
+                <div class="dropdown-divider"></div>
+                <a href="mymusic.html"><i class="fas fa-heart"></i>我的收藏</a>
+                <a href="#"><i class="fas fa-cog"></i>账户设置</a>
+                <div class="dropdown-divider"></div>
+                <a href="login.html" id="logout"><i class="fas fa-sign-out-alt"></i>退出登录</a>
+            </div>
+        </div>
+        <button class="theme-toggle" id="themeToggle">
+            <i class="fas fa-moon"></i>
+        </button>
+    </div>
+
+    <div class="hamburger">
+        <i class="fas fa-bars"></i>
+    </div>
+</nav>
+
+<!-- 我的音乐主要内容区 -->
+<div class="container my-music-container">
+    <!-- 我的歌单 -->
+    <div class="section">
+        <div class="section-header">
+            <h2>我的歌单</h2>
+            <div class="more">查看更多 <i class="fas fa-chevron-right"></i></div>
+        </div>
+        <div id="myPlaylists" class="music-grid">
+            <!-- JS动态加载 -->
+        </div>
+    </div>
+
+    <!-- 我喜欢的音乐 -->
+    <div class="section">
+        <div class="section-header">
+            <h2>喜欢的音乐 <i class="fas fa-heart" style="color: #ff4d67;"></i></h2>
+        </div>
+        <div class="liked-songs-container">
+            <div class="liked-songs-info">
+                <div class="liked-songs-cover">
+                    <img id="cover-image" alt="喜欢音乐的封面">
+                    <div class="play-icon">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+                <div class="liked-songs-details">
+                    <div class="title">我喜欢的音乐</div>
+                    <div class="stat" id="stat">0首歌曲</div>
+                    <div class="actions">
+                        <button class="btn-play-all">
+                            <i class="fas fa-play-circle"></i> 播放全部
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div id="likedSongsList" class="songs-list">
+                <!-- JS动态加载喜欢的歌曲 -->
+            </div>
+
+            <div class="pagination">
+                <button id="prevPage" disabled>
+                    <i class="fas fa-chevron-left" style="color: #7ec4ff;"></i>
+                </button>
+                <span id="pageInfo">1/1</span>
+                <button id="nextPage" disabled>
+                    <i class="fas fa-chevron-right" style="color: #7ec4ff;"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 最近播放 -->
+    <div class="section">
+        <div class="section-header">
+            <h2>最近播放</h2>
+            <div class="more">查看更多 <i class="fas fa-chevron-right"></i></div>
+        </div>
+        <div id="recentSongs" class="songs-list">
+            <!-- JS动态加载 -->
+        </div>
+    </div>
+</div>
+
+<!-- 底部播放控制条 -->
+<div class="player-bar">
+    <div class="now-playing">
+        <img id="currentCover" src="" alt="当前播放">
+        <div class="song-info">
+            <div id="currentTitle" class="song-title">未在播放</div>
+            <div id="currentArtist" class="song-artist">未知歌手</div>
+            <div class="progress-bar">
+                <div class="time-info">
+                    <span id="currentTime">0:00</span>
+                    <span id="totalTime">0:00</span>
+                </div>
+                <div class="progress-container" id="progressContainer">
+                    <div class="progress" id="songProgress"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="player-controls">
+        <i class="fas fa-random" id="randomBtn"></i>
+        <i class="fas fa-step-backward" id="prevBtn"></i>
+        <div class="play-btn" id="playPauseBtn">
+            <i class="fas fa-pause" id="playIcon"></i>
+        </div>
+        <i class="fas fa-step-forward" id="nextBtn"></i>
+        <i class="fas fa-repeat" id="repeatBtn"></i>
+        <i class="fas fa-heart-o" id="likeCurrentSong"></i>
+    </div>
+
+    <div class="volume">
+        <i class="fas fa-volume-up" id="volumeIcon"></i>
+        <div class="volume-bar" id="volumeControl">
+            <div class="progress volume-progress" id="volumeLevel"></div>
+        </div>
+    </div>
+</div>
+
+<div class="notification" id="notification">未在播放</div>
+
+<!-- 引入axios -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+<script src="js/mymusic.js"></script>
+</body>
+</html>
