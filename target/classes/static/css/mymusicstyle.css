@@ -1574,3 +1574,38 @@ body {
     color: #666;
     font-size: 14px;
 }
+
+.page-jump-container {
+    display: inline-flex;
+    align-items: center;
+    margin: 0 10px;
+}
+
+.page-jump-input {
+    width: 60px;
+    padding: 5px 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    text-align: center;
+    margin-right: 5px;
+    font-size: 14px;
+}
+
+.page-jump-input:focus {
+    outline: none;
+    border-color: #4285f4;
+}
+
+.page-jump-btn {
+    padding: 5px 10px;
+    background-color: #f8f9fa;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.2s;
+}
+
+.page-jump-btn:hover {
+    background-color: #e8eaed;
+}

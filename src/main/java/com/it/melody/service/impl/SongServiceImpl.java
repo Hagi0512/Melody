@@ -49,6 +49,11 @@ public class SongServiceImpl implements SongService {
     }
 
     @Override
+    public List<Songs> getSongsByPlaylistId(int id) {
+        return songMapper.getSongsByPlaylistId(id);
+    }
+
+    @Override
     public void streamSong(String filePath, HttpServletResponse response) {
         try {
             // 校验路径安全性

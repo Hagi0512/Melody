@@ -6,9 +6,18 @@
 
     <!--根据用户的输入查询歌曲-->
     <select id="searchSong" resultType="com.it.melody.pojo.Songs">
-        select song_id,title,file_path,duration,artist,uploaded_at,album,cover_image from songs where title like concat('%',#{query},'%') or artist like concat('%',#{query},'%')
+        select song_id,title,file_path,duration,artist,uploaded_at,album,cover_image
+        from songs
+        where title like concat('%',#{query},'%') or artist like concat('%',#{query},'%')
     </select>
     <select id="getSongPath" resultType="java.lang.String">
-        select file_path from songs where song_id=#{id}
+        select file_path
+        from songs
+        where song_id=#{id}
+    </select>
+    <select id="getSongsByPlaylistId" resultType="com.it.melody.pojo.Songs">
+        select songs.song_id, title, file_path, duration, artist, uploaded_at, album, cover_image
+        from songs join playlist_songs on songs.song_id = playlist_songs.song_id
+        where playlist_id = #{id}
     </select>
 </mapper>

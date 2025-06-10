@@ -259,9 +259,7 @@ function setupEventListeners() {
     document.getElementById('searchInput').addEventListener('keyup', (e) => {
         if (e.key === 'Enter') {
             const query = e.target.value.trim();
-            if (query) {
-                searchMusic(query);
-            }
+            searchMusic(query);
         }
     });
 
@@ -317,7 +315,7 @@ async function searchMusic(query, page = 1) {
                     console.error(`检查歌曲 ${song.id} 喜欢状态失败:`, error);
                     return {
                         ...song,
-                        isLiked: false 
+                        isLiked: false
                     };
                 }
             }));
@@ -344,8 +342,6 @@ async function searchMusic(query, page = 1) {
             songs.forEach((song, index) => {
                 resultsGrid.appendChild(createSongCard(song, index));
             });
-
-
 
             document.querySelector('.back-button').addEventListener('click', restoreOriginalState);
         } else {
@@ -428,7 +424,7 @@ async function loadMyPlaylists(userData) {
         grid.innerHTML = `<div class="loading"><div class="loading-spinner"></div></div>`;
 
         // 加载数据
-        const response = await fetch('http://localhost:8080/user/' + userData.userId + '/liked-song');
+        const response = await fetch(`http://localhost:8080/songlist/${userData.userId}`);
         const result = await response.json();
 
         // 渲染歌单
@@ -623,6 +619,8 @@ async function toggleLikeSong(song) {
             }
 
             showNotification(song.isLiked ? '已从喜欢列表移除' : '已添加到喜欢列表');
+
+            location.reload(true);
         } else {
             throw new Error('请求失败');
         }
@@ -905,6 +903,42 @@ function renderSearchPagination() {
         nextBtn.addEventListener('click', () => searchMusic(currentQuery, searchCurrentPage + 1));
         pagination.appendChild(nextBtn);
     }
+
+    // 添加页码跳转输入框
+    const jumpContainer = document.createElement('div');
+    jumpContainer.className = 'page-jump-container';
+
+    const jumpInput = document.createElement('input');
+    jumpInput.type = 'number';
+    jumpInput.min = '1';
+    jumpInput.max = searchTotalPages;
+    jumpInput.value = searchCurrentPage;
+    jumpInput.className = 'page-jump-input';
+    jumpInput.placeholder = '页码';
+
+    const jumpButton = document.createElement('button');
+    jumpButton.className = 'page-jump-btn';
+    jumpButton.textContent = '跳转';
+    jumpButton.addEventListener('click', () => {
+        const page = parseInt(jumpInput.value);
+        if (page >= 1 && page <= searchTotalPages && page !== searchCurrentPage) {
+            searchMusic(currentQuery, page);
+        }
+    });
+
+    // 添加回车键支持
+    jumpInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            const page = parseInt(jumpInput.value);
+            if (page >= 1 && page <= searchTotalPages && page !== searchCurrentPage) {
+                searchMusic(currentQuery, page);
+            }
+        }
+    });
+
+    jumpContainer.appendChild(jumpInput);
+    jumpContainer.appendChild(jumpButton);
+    pagination.appendChild(jumpContainer);
 
     // 添加总页数信息
     const pageInfo = document.createElement('span');

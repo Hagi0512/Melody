@@ -424,7 +424,7 @@ async function loadMyPlaylists(userData) {
         grid.innerHTML = `<div class="loading"><div class="loading-spinner"></div></div>`;
 
         // 加载数据
-        const response = await fetch('http://localhost:8080/user/' + userData.userId + '/liked-song');
+        const response = await fetch(`http://localhost:8080/songlist/${userData.userId}`);
         const result = await response.json();
 
         // 渲染歌单

@@ -13,4 +13,6 @@ public interface SongMapper {
 
     //获取歌曲路径
     String getSongPath(int id);
+
+    List<Songs> getSongsByPlaylistId(int id);
 }
