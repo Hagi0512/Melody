@@ -432,7 +432,7 @@ async function loadLikedSongs(userData, page) {
         // 使用数据
         const response = await fetch(`http://localhost:8080/user/${userData.userId}/liked-song?page=${page}&size=${songsPerPage}`); // 保存歌曲列表`
         const result = await response.json();
-        songs = result.data.rows.map(song => ({
+        let songs = result.data.rows.map(song => ({
             ...song,
             isLiked: true
         }));
