@@ -19,4 +19,6 @@ public interface UserService {
     void deleteLikedSong(int id, int songId);
 
     List<Songs> getAllLikedSongs(int id);
+
+    boolean isLiked(int id, int songId);
 }

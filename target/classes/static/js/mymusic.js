@@ -280,6 +280,8 @@ function setupEventListeners() {
 // 搜索音乐
 async function searchMusic(query, page = 1) {
     try {
+        const userData = JSON.parse(sessionStorage.getItem('userData'));
+
         currentQuery = query;
         searchCurrentPage = page
 
@@ -303,7 +305,22 @@ async function searchMusic(query, page = 1) {
 
         if (result.code === 1 && result.data) {
             const data = result.data;
-            const songs = data.rows;
+            const songs = await Promise.all(data.rows.map(async song => {
+                try {
+                    const response = await fetch(`http://localhost:8080/user/${userData.userId}/liked-song/${song.songId}`);
+                    const result = await response.json();
+                    return {
+                        ...song,
+                        isLiked: result.code === 1
+                    };
+                } catch (error) {
+                    console.error(`检查歌曲 ${song.id} 喜欢状态失败:`, error);
+                    return {
+                        ...song,
+                        isLiked: false 
+                    };
+                }
+            }));
             searchTotalResults  = data.total;
             searchTotalPages = Math.ceil(searchTotalResults / searchPageSize);
 
@@ -432,7 +449,7 @@ async function loadLikedSongs(userData, page) {
         // 使用数据
         const response = await fetch(`http://localhost:8080/user/${userData.userId}/liked-song?page=${page}&size=${songsPerPage}`); // 保存歌曲列表`
         const result = await response.json();
-        let songs = result.data.rows.map(song => ({
+        songs = result.data.rows.map(song => ({
             ...song,
             isLiked: true
         }));
@@ -578,45 +595,36 @@ function createSongRow(song, index, isRecent = false) {
 async function toggleLikeSong(song) {
     try {
         const userData = JSON.parse(sessionStorage.getItem('userData'));
-        if(!song.isLiked){
-            const response = await fetch(`http://localhost:8080/user/${userData.userId}/liked-song/${song.songId}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            });
-            if (response.ok) {
-                const result = await response.json();
-                // 更新本地歌曲列表的喜欢状态
-                const songIndex = songs.findIndex(s => s.id === song.songId);
-                if (songIndex !== -1) {
-                    songs[songIndex].isLiked = true;
-                    // 更新UI而不需要重新加载
-                    updateSongUI(song.songId, true);
-                }
-                window.location.href = window.location.href;
-                showNotification('已添加到喜欢列表');
-            }
+        if (!userData || !userData.userId) {
+            showNotification('请先登录', true);
+            return;
         }
-        else {
-            const response = await fetch(`http://localhost:8080/user/${userData.userId}/liked-song/${song.songId}`, {
-                method: 'DELETE',
+
+        const response = await fetch(
+            `http://localhost:8080/user/${userData.userId}/liked-song/${song.songId}`,
+            {
+                method: song.isLiked ? 'DELETE' : 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 }
-            });
-            if (response.ok) {
-                const result = await response.json();
-                // 更新本地歌曲列表的喜欢状态
-                const songIndex = songs.findIndex(s => s.id === song.songId);
-                if (songIndex !== -1) {
-                    songs[songIndex].isLiked = false;
-                    // 更新UI而不需要重新加载
-                    updateSongUI(song.songId, false);
-                }
-                window.location.href = window.location.href;
-                showNotification('已从喜欢列表移除');
             }
+        );
+
+        if (response.ok) {
+            // 更新本地歌曲列表的喜欢状态
+            const songIndex = songs.findIndex(s => s.id === song.songId);
+            if (songIndex !== -1) {
+                songs[songIndex].isLiked = !song.isLiked;
+                // 更新当前歌曲的喜欢状态
+                currentSong.isLiked = !song.isLiked;
+                // 更新UI而不需要重新加载
+                updateSongUI(song.songId, !song.isLiked);
+                updateLikeButton(!song.isLiked);
+            }
+
+            showNotification(song.isLiked ? '已从喜欢列表移除' : '已添加到喜欢列表');
+        } else {
+            throw new Error('请求失败');
         }
     } catch (error) {
         console.error('Error toggling like status:', error);
@@ -781,9 +789,13 @@ function updatePlayerInfo(song) {
     document.getElementById('currentTime').textContent = '0:00';
     document.getElementById('songProgress').style.width = '0%';
 
-    //  更新喜欢按钮
+    // 更新喜欢按钮
+    updateLikeButton(song.isLiked);
+}
+
+function updateLikeButton(isLiked) {
     const likeBtn = document.getElementById('likeCurrentSong');
-    likeBtn.innerHTML = `<i class="fas fa-heart ${song.isLiked ? 'is-liked-song' : ''}"></i>`;
+    likeBtn.innerHTML = `<i class="fas fa-heart ${isLiked ? 'is-liked-song' : ''}"></i>`;
 }
 
 // 格式化播放次数

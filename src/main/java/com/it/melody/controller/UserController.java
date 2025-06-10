@@ -64,4 +64,12 @@ public class UserController {
         userService.deleteLikedSong(id, songId);
         return Result.success();
     }
+
+    // 判断用户是否收藏
+    @GetMapping("/{id}/liked-song/{songId}")
+    public Result isLiked(@PathVariable int id, @PathVariable int songId){
+        boolean isLiked = userService.isLiked(id, songId);
+        if (isLiked) return Result.success();
+        return Result.error("未收藏");
+    }
 }

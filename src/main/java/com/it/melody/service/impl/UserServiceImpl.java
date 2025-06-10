@@ -59,4 +59,9 @@ public class UserServiceImpl implements UserService {
     public List<Songs> getAllLikedSongs(int id) {
         return userMapper.getAllLikedSongsById(id);
     }
+
+    @Override
+    public boolean isLiked(int id, int songId) {
+        return userMapper.findLikedSongById(id, songId) != null;
+    }
 }

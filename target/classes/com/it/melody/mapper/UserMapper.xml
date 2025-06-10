@@ -35,4 +35,10 @@
         from songs join user_favorite_music on songs.song_id=user_favorite_music.song_id
         where user_id= #{id}
     </select>
+    <select id="findLikedSongById" resultType="java.time.LocalDateTime">
+        select created_at
+        from user_favorite_music
+        where user_id= #{id} and song_id= #{songId}
+    </select>
+
 </mapper>

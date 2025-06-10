@@ -4,6 +4,7 @@ import com.it.melody.pojo.Login;
 import com.it.melody.pojo.Songs;
 import org.apache.ibatis.annotations.Mapper;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Mapper
@@ -21,4 +22,6 @@ public interface UserMapper {
     void deleteFavoriteById(int id, int songId);
 
     List<Songs> getAllLikedSongsById(int id);
+
+    LocalDateTime findLikedSongById(int id, int songId);
 }
