@@ -623,6 +623,8 @@ async function toggleLikeSong(song) {
             }
 
             showNotification(song.isLiked ? '已从喜欢列表移除' : '已添加到喜欢列表');
+
+            location.reload(true);
         } else {
             throw new Error('请求失败');
         }
