@@ -424,12 +424,13 @@ async function loadMyPlaylists(userData) {
         grid.innerHTML = `<div class="loading"><div class="loading-spinner"></div></div>`;
 
         // 加载数据
-        const response = await fetch(`http://localhost:8080/songlist/${userData.userId}`);
+        const response = await fetch(`http://localhost:8080/playlist/${userData.userId}`);
         const result = await response.json();
 
         // 渲染歌单
         grid.innerHTML = '';
         result.data.forEach(playlist => {
+            console.log(playlist);
             grid.appendChild(createPlaylistCard(playlist));
         });
     } catch (error) {
@@ -520,7 +521,7 @@ async function loadRecentlyPlayed() {
     }
 }
 
-// 创建播放列表卡片
+// 创建歌单卡片
 function createPlaylistCard(playlist) {
     const card = document.createElement('div');
     card.className = 'music-card';
