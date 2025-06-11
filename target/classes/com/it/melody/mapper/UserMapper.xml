@@ -40,5 +40,10 @@
         from user_favorite_music
         where user_id= #{id} and song_id= #{songId}
     </select>
+    <select id="getUserById" resultType="java.lang.String">
+        select username
+        from users
+        where user_id = #{id}
+    </select>
 
 </mapper>

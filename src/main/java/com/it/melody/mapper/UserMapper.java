@@ -24,4 +24,6 @@ public interface UserMapper {
     List<Songs> getAllLikedSongsById(int id);
 
     LocalDateTime findLikedSongById(int id, int songId);
+
+    String getUserById(int userId);
 }
