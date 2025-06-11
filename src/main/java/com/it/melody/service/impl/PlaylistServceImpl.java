@@ -8,6 +8,7 @@ import com.it.melody.service.SongService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Base64;
 import java.util.List;
 
 @Service
@@ -27,6 +28,11 @@ public class PlaylistServceImpl implements PlaylistServce {
             playlist.setSongs(songService.getSongsByPlaylistId(id));
             playlist.setSongCount(playlist.getSongs().size());
             playlist.setUserName(userMapper.getUserById(playlist.getUserId()));
+            if (playlist.getSongs().get(0).getCoverImage() != null) {
+                String base64Image = Base64.getEncoder().encodeToString(playlist.getSongs().get(0).getCoverImage());
+                String imageSrc = "data:image/jpeg;base64," + base64Image;
+                playlist.setCover(imageSrc);
+            }
         }
         return playlists;
     }

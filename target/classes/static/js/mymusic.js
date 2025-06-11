@@ -424,12 +424,13 @@ async function loadMyPlaylists(userData) {
         grid.innerHTML = `<div class="loading"><div class="loading-spinner"></div></div>`;
 
         // 加载数据
-        const response = await fetch(`http://localhost:8080/songlist/${userData.userId}`);
+        const response = await fetch(`http://localhost:8080/playlist/${userData.userId}`);
         const result = await response.json();
 
         // 渲染歌单
         grid.innerHTML = '';
         result.data.forEach(playlist => {
+            console.log(playlist);
             grid.appendChild(createPlaylistCard(playlist));
         });
     } catch (error) {
@@ -520,33 +521,115 @@ async function loadRecentlyPlayed() {
     }
 }
 
-// 创建播放列表卡片
+// 创建歌单卡片
 function createPlaylistCard(playlist) {
     const card = document.createElement('div');
     card.className = 'music-card';
     card.innerHTML = `
         <div class="card-img">
-            <img src="${playlist.cover}" alt="${playlist.title}">
+            <img src="${playlist.cover}" alt="${playlist.name}">
             <div class="play-btn">
                 <i class="fas fa-play"></i>
             </div>
-            <div class="play-count">
-                <i class="fas fa-play"></i> ${formatPlayCount(playlist.playCount)}
-            </div>
         </div>
         <div class="card-info">
-            <div class="card-title">${playlist.title}</div>
-            <div class="card-artist">${playlist.songs}首歌曲</div>
+            <div class="card-title">${playlist.name}</div>
+            <div class="card-artist">${playlist.songCount}首歌曲</div>
         </div>
     `;
 
     // 点击播放列表
-    card.addEventListener('click', () => {
-        showNotification(`播放歌单: ${playlist.title}`);
+    card.addEventListener('click', (e) => {
+        // 阻止事件冒泡到可能的父元素
+        e.stopPropagation();
+
+        // 使用历史API进行页面跳转（保持单页应用体验）
+        const state = { playlistId: playlist.playlistId };
+        history.pushState(state, "", `/playlist?id=${playlist.playlistId}`);
+
+        // 加载该歌单详情内容
+        loadPlaylistDetail(playlist);
     });
 
     return card;
 }
+
+async function loadPlaylistDetail(playlist) {
+    try {
+        // 显示加载状态
+        const mainContent = document.getElementById('myPlaylists');
+        if (!mainContent) {
+            console.error('myPlaylists element not found');
+            return;
+        }
+        mainContent.innerHTML = `<div class="loading"><div class="loading-spinner"></div></div>`;
+        // 渲染歌单详情页
+        renderPlaylistDetail(playlist);
+    } catch (error) {
+        console.error('加载歌单详情失败:', error);
+        document.getElementById('myPlaylists').innerHTML = '<p class="error">加载歌单失败: ' + error.message + '</p>';
+    }
+}
+
+function renderPlaylistDetail(playlist) {
+    const mainContent = document.getElementById('myPlaylists');
+
+    // 构建歌单头部信息
+    const headerHTML = `
+        <div class="playlist-header">
+            <img src="${playlist.cover || './images/null.jpg'}" alt="${playlist.name}" class="playlist-cover">
+            <div class="playlist-info">
+                <h1>${playlist.name}</h1>
+                <div class="meta">
+                    <span>创建者: ${playlist.userName}</span>
+                    <span>歌曲数: ${playlist.songCount}</span>
+                    <span>创建时间: ${new Date(playlist.createdAt).toLocaleDateString()}</span>
+                </div>
+                <button class="play-all-btn">
+                    <i class="fas fa-play"></i> 播放全部
+                </button>
+            </div>
+        </div>
+    `;
+
+    // 构建歌曲列表
+    let songsHTML = '<div class="song-list-header">';
+    songsHTML += '<div class="song-index">#</div>';
+    songsHTML += '<div class="song-title">歌曲标题</div>';
+    songsHTML += '<div class="song-artist">歌手</div>';
+    songsHTML += '<div class="song-album">专辑</div>';
+    songsHTML += '<div class="song-time">时长</div>';
+    songsHTML += '</div>';
+
+    // 添加歌曲行
+    playlist.songs.forEach((song, index) => {
+        songsHTML += createSongRow(song, index).outerHTML;
+    });
+
+    // 组合完整内容
+    mainContent.innerHTML = `
+        <div class="playlist-detail">
+            ${headerHTML}
+            <div class="playlist-songs">
+                ${songsHTML}
+            </div>
+        </div>
+    `;
+
+    // 添加播放全部按钮事件
+    document.querySelector('.play-all-btn').addEventListener('click', () => {
+        playPlaylist(playlist.songs);
+    });
+}
+
+function playPlaylist(listSong) {
+    songs = listSong;
+    currentSong = songs[0];
+    currentSongIndex = 0;
+    playSongByIndex(currentSongIndex);
+    updatePlayerInfo(currentSong);
+}
+
 
 // 创建歌曲行（列表模式）
 function createSongRow(song, index, isRecent = false) {

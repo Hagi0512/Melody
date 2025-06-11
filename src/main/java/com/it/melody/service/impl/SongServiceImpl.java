@@ -32,6 +32,12 @@ public class SongServiceImpl implements SongService {
     public PageResult searchSong(String query, int page, int size) {
         PageHelper.startPage(page, size);
         List<Songs> songs = songMapper.searchSong(query);
+        setSongsCover(songs);
+        Page<Songs> p = (Page<Songs>) songs;
+        return new PageResult(p.getTotal(), p.getResult());
+    }
+
+    public List<Songs> setSongsCover(List<Songs> songs){
         for (Songs song : songs){
             if (song.getCoverImage() != null){
                 String base64Image = Base64.getEncoder().encodeToString(song.getCoverImage());
@@ -39,8 +45,7 @@ public class SongServiceImpl implements SongService {
                 song.setCover(imageSrc);
             }
         }
-        Page<Songs> p = (Page<Songs>) songs;
-        return new PageResult(p.getTotal(), p.getResult());
+        return songs;
     }
 
     @Override
@@ -50,7 +55,7 @@ public class SongServiceImpl implements SongService {
 
     @Override
     public List<Songs> getSongsByPlaylistId(int id) {
-        return songMapper.getSongsByPlaylistId(id);
+        return setSongsCover(songMapper.getSongsByPlaylistId(id));
     }
 
     @Override
