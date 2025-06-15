@@ -9,6 +9,11 @@
         values(#{id},#{songId})
     </insert>
 
+    <insert id="addPlaylistByUserId">
+        insert into playlists(user_id, name, description)
+        values(#{id}, #{name}, #{description})
+    </insert>
+
     <select id="getPlaylistById" resultType="com.it.melody.pojo.Playlist">
         select playlist_id,name,user_id,created_at,description
         from playlists

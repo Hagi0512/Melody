@@ -46,4 +46,9 @@ public class PlaylistServiceImpl implements PlaylistService {
     public void deleteSong(List<Integer> songIds) {
         songMapper.deleteSongsById(songIds);
     }
+
+    @Override
+    public void createPlaylist(Integer id, String name, String description) {
+        playlistMapper.addPlaylistByUserId(id, name, description);
+    }
 }

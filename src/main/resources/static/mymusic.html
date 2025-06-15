@@ -26,7 +26,9 @@
 
 
     <div class="user-section">
-        <button><i class="fas fa-plus"></i> 创建歌单</button>
+        <button id="createPlaylistButton" class="create-button">
+            <i class="fas fa-plus"></i> 创建歌单
+        </button>
         <div class="user-avatar">
             <img id="userAvatar" src="./images/user.jpg" alt="用户头像">
             <div class="dropdown-menu">
@@ -104,6 +106,36 @@
             </div>
         </div>
     </div>
+
+    <!--创建歌单表单-->
+    <div class="modal-overlay" id="playlistModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2 class="modal-title"><i class="fas fa-compact-disc"></i> 创建新歌单</h2>
+                <button class="close-button" id="closeModal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="playlistName"><i class="fas fa-heading"></i> 歌单名称</label>
+                    <input type="text" id="playlistName" class="form-control" placeholder="输入歌单名称">
+                    <div class="error-message" id="nameError">歌单名称不能为空</div>
+                </div>
+                <div class="form-group">
+                    <label for="playlistDesc"><i class="fas fa-align-left"></i> 歌单描述 (可选)</label>
+                    <textarea id="playlistDesc" class="form-control" placeholder="输入歌单描述..." rows="3"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="modal-button cancel-button" id="cancelButton">
+                    <i class="fas fa-times"></i> 取消
+                </button>
+                <button type="button" class="modal-button submit-button" id="submitButton">
+                    <i class="fas fa-check"></i> 创建歌单
+                </button>
+            </div>
+        </div>
+    </div>
+
 
     <!-- 最近播放 -->
     <div class="section">

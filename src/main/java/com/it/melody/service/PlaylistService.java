@@ -10,4 +10,6 @@ public interface PlaylistService {
     void addSongById(int id, int songId);
 
     void deleteSong(List<Integer> songIds);
+
+    void createPlaylist(Integer id, String name, String description);
 }

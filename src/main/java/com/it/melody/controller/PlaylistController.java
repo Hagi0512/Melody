@@ -38,4 +38,12 @@ public class PlaylistController {
         playlistService.deleteSong(requestBody.get("songIds"));
         return Result.success();
     }
+
+    // 新增歌单
+    @PostMapping("/create/{id}")
+    public Result createPlaylist(@PathVariable int id, @RequestBody Map<String, String> requestBody){
+        String name = requestBody.get("name"), description = requestBody.get("description");
+        playlistService.createPlaylist(id, name, description);
+        return Result.success();
+    }
 }

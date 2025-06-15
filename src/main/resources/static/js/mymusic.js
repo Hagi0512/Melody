@@ -1330,3 +1330,89 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 });
+
+const createBtn = document.getElementById('createPlaylistButton');
+const modal = document.getElementById('playlistModal');
+const closeBtn = document.getElementById('closeModal');
+const cancelBtn = document.getElementById('cancelButton');
+const submitBtn = document.getElementById('submitButton');
+const playlistName = document.getElementById('playlistName');
+const nameError = document.getElementById('nameError');
+
+// 打开模态框
+createBtn.addEventListener('click', () => {
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden'; // 禁止背景滚动
+});
+
+// 关闭模态框函数
+function closeModal() {
+    modal.classList.remove('active');
+    document.body.style.overflow = ''; // 恢复背景滚动
+    nameError.style.display = 'none'; // 隐藏错误信息
+    playlistName.style.borderColor = '#ddd'; // 重置边框颜色
+}
+
+// 通过关闭按钮关闭
+closeBtn.addEventListener('click', closeModal);
+
+// 通过取消按钮关闭
+cancelBtn.addEventListener('click', closeModal);
+
+// 通过背景点击关闭
+modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+        closeModal();
+    }
+});
+
+// 通过ESC键关闭
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('active')) {
+        closeModal();
+    }
+});
+
+// 创建歌单提交功能
+submitBtn.addEventListener('click', async () => {
+    // 验证表单
+    if (!playlistName.value.trim()) {
+        playlistName.style.borderColor = '#e74c3c';
+        nameError.style.display = 'block';
+        playlistName.focus();
+        return;
+    }
+
+    // 表单验证通过
+    nameError.style.display = 'none';
+    playlistName.style.borderColor = '#ddd';
+
+    // 获取表单值
+    const name = playlistName.value.trim();
+    const description = document.getElementById('playlistDesc').value;
+    const userData = JSON.parse(sessionStorage.getItem('userData'));
+
+    await showNotification(await createPlaylist(name, description, userData)
+        ? `歌单 "${name}" 创建成功！`
+        : `歌单 "${name}" 创建失败！`);
+
+    await loadMyPlaylists(userData);
+    // 关闭模态框
+    closeModal();
+
+    // 清空表单
+    playlistName.value = '';
+    document.getElementById('playlistDesc').value = '';
+    document.getElementById('playlistPrivacy').value = 'public';
+});
+
+// 发送请求创建歌单
+async function createPlaylist(name, description, userData) {
+
+    const response = await fetch(`http://localhost:8080/playlist/create/${userData.userId}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, description })
+    });
+    return response.code === 1;
+}

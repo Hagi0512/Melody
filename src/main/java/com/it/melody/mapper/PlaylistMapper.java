@@ -11,4 +11,5 @@ public interface PlaylistMapper {
 
     void addSongById(int id, int songId);
 
+    void addPlaylistByUserId(int id, String name, String description);
 }
