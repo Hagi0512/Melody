@@ -1,9 +1,10 @@
 package com.it.melody.service.impl;
 
 import com.it.melody.mapper.PlaylistMapper;
+import com.it.melody.mapper.SongMapper;
 import com.it.melody.mapper.UserMapper;
 import com.it.melody.pojo.Playlist;
-import com.it.melody.service.PlaylistServce;
+import com.it.melody.service.PlaylistService;
 import com.it.melody.service.SongService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,7 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class PlaylistServceImpl implements PlaylistServce {
+public class PlaylistServiceImpl implements PlaylistService {
 
     @Autowired
     PlaylistMapper playlistMapper;
@@ -19,6 +20,8 @@ public class PlaylistServceImpl implements PlaylistServce {
     SongService songService;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private SongMapper songMapper;
 
     @Override
     public List<Playlist> getPlaylist(int id) {
@@ -37,5 +40,10 @@ public class PlaylistServceImpl implements PlaylistServce {
     @Override
     public void addSongById(int id, int songId) {
         playlistMapper.addSongById(id, songId);
+    }
+
+    @Override
+    public void deleteSong(List<Integer> songIds) {
+        songMapper.deleteSongsById(songIds);
     }
 }

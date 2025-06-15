@@ -3,6 +3,13 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.it.melody.mapper.SongMapper">
+    <delete id="deleteSongsById">
+        delete from playlist_songs
+        where song_id in
+        <foreach collection="songIds" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
 
     <!--根据用户的输入查询歌曲-->
     <select id="searchSong" resultType="com.it.melody.pojo.Songs">

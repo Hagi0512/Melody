@@ -15,4 +15,6 @@ public interface SongMapper {
     String getSongPath(int id);
 
     List<Songs> getSongsByPlaylistId(int id);
+
+    void deleteSongsById(List<Integer> songIds);
 }

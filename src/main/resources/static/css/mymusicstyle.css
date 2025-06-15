@@ -2005,3 +2005,66 @@ body {
 .delete-songs-btn:hover {
     background-color: #ff1a1a;
 }
+
+/* 删除模式相关样式 */
+.delete-mode .song-row {
+    background-color: rgba(255, 0, 0, 0.05);
+    transition: background-color 0.3s;
+}
+
+.delete-mode .song-row:hover {
+    background-color: rgba(255, 0, 0, 0.1);
+}
+
+.delete-mode .song-row.selected {
+    background-color: rgba(255, 0, 0, 0.2);
+}
+
+.song-selector {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.song-checkbox {
+    width: 18px;
+    height: 18px;
+    display: none;
+    cursor: pointer;
+    vertical-align: middle;
+    accent-color: #ff4d4d;
+}
+
+/* 按钮样式 */
+.delete-songs-btn,
+.confirm-delete-btn,
+.cancel-delete-btn {
+    background: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: all 0.3s;
+    font-size: 14px;
+}
+
+.delete-songs-btn:hover {
+    background: #e60000;
+}
+
+.confirm-delete-btn {
+    background: #4CAF50;
+}
+
+.confirm-delete-btn:hover {
+    background: #388E3C;
+}
+
+.cancel-delete-btn {
+    background: #9e9e9e;
+}
+
+.cancel-delete-btn:hover {
+    background: #616161;
+}

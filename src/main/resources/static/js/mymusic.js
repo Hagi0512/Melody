@@ -20,7 +20,7 @@ let searchTotalResults = 0;
 let searchTotalPages = 1;
 let currentQuery = '';
 
-//  保存原始状态
+// 保存原始状态
 let originalState = null;
 
 // DOM加载完成后执行
@@ -119,7 +119,7 @@ function setupEventListeners() {
         return !wasActive; // 返回新状态
     }
 
-// 随机播放按钮
+    // 随机播放按钮
     document.getElementById('randomBtn').addEventListener('click', () => {
         const isActive = toggleExclusive(
             document.getElementById('randomBtn'),
@@ -129,7 +129,7 @@ function setupEventListeners() {
         showNotification(`随机播放 ${isActive ? '已开启' : '已关闭'}`);
     });
 
-// 循环播放按钮
+    // 循环播放按钮
     document.getElementById('repeatBtn').addEventListener('click', () => {
         const isActive = toggleExclusive(
             document.getElementById('repeatBtn'),
@@ -173,7 +173,7 @@ function setupEventListeners() {
         }
     });
 
-// 获取安全时长的辅助函数
+    // 获取安全时长的辅助函数
     function getSafeDuration() {
         // 尝试获取有效时长
         if (audio.duration && !isNaN(audio.duration) && audio.duration !== Infinity) {
@@ -188,7 +188,6 @@ function setupEventListeners() {
         // 默认回退（临时值）
         return currentSong?.duration || 60; // 60秒作为回退
     }
-
 
     let lastVolume = 0.7; // 默认初始值
 
@@ -228,7 +227,6 @@ function setupEventListeners() {
         // 更新音量条UI
         document.getElementById('volumeLevel').style.width = `${volume * 100}%`;
     }
-
 
     // 音频时间更新
     audio.addEventListener('timeupdate', () => {
@@ -542,10 +540,6 @@ function createPlaylistCard(playlist) {
         // 阻止事件冒泡到可能的父元素
         e.stopPropagation();
 
-        // 使用历史API进行页面跳转（保持单页应用体验）
-        //const state = { playlistId: playlist.playlistId };
-        //history.pushState(state, "", `/playlist?userId=${playlist.playlistId}`);
-
         // 加载该歌单详情内容
         loadPlaylistDetail(playlist);
     });
@@ -593,7 +587,7 @@ async function renderPlaylistDetail(playlist) {
         '"': '&quot;'
     }[tag]));
 
-    // 安全构建HTML - 添加删除按钮
+    // 安全构建HTML
     const buildHeaderHTML = () => {
         const name = escapeHTML(playlist.name);
         const description = escapeHTML(playlist.description || '暂无描述');
@@ -623,11 +617,14 @@ async function renderPlaylistDetail(playlist) {
                         <button class="play-all-btn">
                             <i class="fas fa-play"></i> 播放全部
                         </button>
-                        <button class="delete-songs-btn">
+                        <button class="delete-songs-btn" id="deleteSongsBtn">
                             <i class="fas fa-trash"></i> 删除歌曲
                         </button>
-                        <button class="confirm-delete-btn" style="display: none;">
+                        <button class="confirm-delete-btn" id="confirmDeleteBtn" style="display:none;">
                             <i class="fas fa-check"></i> 确认删除
+                        </button>
+                        <button class="cancel-delete-btn" id="cancelDeleteBtn" style="display:none;">
+                            <i class="fas fa-times"></i> 取消
                         </button>
                     </div>
                 </div>
@@ -663,19 +660,12 @@ async function renderPlaylistDetail(playlist) {
 
         const songsContainer = document.createElement('div');
         songsContainer.className = 'playlist-songs';
+        songsContainer.id = 'playlistSongsContainer';
 
         listSongs.forEach((song, index) => {
-            const songRow = createSongRow(song, index);
-
-            // 添加选择框（不修改createSongRow）
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.className = 'song-checkbox';
-            checkbox.dataset.songId = song.id;
-            checkbox.style.display = 'none'; // 默认隐藏
-            checkbox.style.marginRight = '10px';
-            songRow.insertBefore(checkbox, songRow.firstChild);
-
+            // 使用修改后的createSongRow函数
+            const songRow = createSongRow(song, index, false, true);
+            songRow.dataset.songId = song.songId || song.id;
             songsContainer.appendChild(songRow);
         });
 
@@ -688,31 +678,18 @@ async function renderPlaylistDetail(playlist) {
         }
         mainContent.appendChild(fragment);
 
-        // 安全添加事件监听器
-        const addSafeListener = (selector, event, handler) => {
-            const element = container.querySelector(selector);
-            if (element) {
-                element.addEventListener(event, handler);
-            }
-        };
+        // 添加事件监听器
+        container.querySelector('.play-all-btn').addEventListener('click', () => playPlaylist(listSongs));
+        container.querySelector('.cover-overlay').addEventListener('click', () => playPlaylist(listSongs));
+        container.querySelector('.back-btn').addEventListener('click', () => {location.reload(true);});
 
-        addSafeListener('.delete-songs-btn', 'click', () => {
-            toggleDeleteMode();
-            const confirmBtn = container.querySelector('.confirm-delete-btn');
-            confirmBtn.style.display = confirmBtn.style.display === 'none' ? 'inline-block' : 'none';
-        });
-
-        addSafeListener('.confirm-delete-btn', 'click', deleteSelectedSongs);
-
-        addSafeListener('.play-all-btn', 'click', () => playPlaylist(listSongs));
-        addSafeListener('.cover-overlay', 'click', () => playPlaylist(listSongs));
-        addSafeListener('.back-btn', 'click', () => {location.reload(true);});
-
-        // 添加删除功能
-        addSafeListener('.delete-songs-btn', 'click', toggleDeleteMode);
+        // 添加删除功能的事件监听
+        document.getElementById('deleteSongsBtn').addEventListener('click', enterDeleteMode);
+        document.getElementById('confirmDeleteBtn').addEventListener('click', deleteSelectedSongs);
+        document.getElementById('cancelDeleteBtn').addEventListener('click', exitDeleteMode);
 
         // 存储当前歌单信息
-        container.dataset.playlistId = playlist.id;
+        container.dataset.playlistId = playlist.playlistId || playlist.id;
         container.dataset.userId = playlist.userId;
 
     } catch (error) {
@@ -721,77 +698,104 @@ async function renderPlaylistDetail(playlist) {
     }
 }
 
-// 切换删除模式
-function toggleDeleteMode() {
-    const checkboxes = document.querySelectorAll('.song-checkbox');
-    const deleteBtn = document.querySelector('.delete-songs-btn');
+// 进入删除模式
+function enterDeleteMode() {
+    // 更新按钮状态
+    document.getElementById('deleteSongsBtn').style.display = 'none';
+    document.getElementById('confirmDeleteBtn').style.display = 'inline-block';
+    document.getElementById('cancelDeleteBtn').style.display = 'inline-block';
 
-    if (deleteBtn.textContent.includes('取消')) {
-        // 退出删除模式
-        checkboxes.forEach(checkbox => {
-            checkbox.style.display = 'none';
-            checkbox.checked = false;
-        });
-        deleteBtn.innerHTML = '<i class="fas fa-trash"></i> 删除歌曲';
-    } else {
-        // 进入删除模式
-        checkboxes.forEach(checkbox => {
-            checkbox.style.display = 'block';
-        });
-        deleteBtn.innerHTML = '<i class="fas fa-times"></i> 取消';
-    }
+    // 显示所有复选框
+    const checkboxes = document.querySelectorAll('.song-checkbox');
+    checkboxes.forEach(checkbox => {
+        checkbox.style.display = 'inline-block';
+    });
+
+    // 添加选择模式样式
+    document.querySelector('.playlist-detail').classList.add('delete-mode');
+}
+
+// 退出删除模式
+function exitDeleteMode() {
+    // 更新按钮状态
+    document.getElementById('deleteSongsBtn').style.display = 'inline-block';
+    document.getElementById('confirmDeleteBtn').style.display = 'none';
+    document.getElementById('cancelDeleteBtn').style.display = 'none';
+
+    // 隐藏所有复选框
+    const checkboxes = document.querySelectorAll('.song-checkbox');
+    checkboxes.forEach(checkbox => {
+        checkbox.style.display = 'none';
+        checkbox.checked = false;
+    });
+
+    // 移除选中行的样式
+    const selectedRows = document.querySelectorAll('.song-row.selected');
+    selectedRows.forEach(row => {
+        row.classList.remove('selected');
+    });
+
+    // 移除选择模式样式
+    document.querySelector('.playlist-detail').classList.remove('delete-mode');
 }
 
 // 删除选中的歌曲
 async function deleteSelectedSongs() {
+    const playlistId = document.querySelector('.playlist-detail').dataset.playlistId;
+    const userId = document.querySelector('.playlist-detail').dataset.userId;
+    const selectedSongs = [];
+
+    // 收集选中的歌曲ID
     const checkboxes = document.querySelectorAll('.song-checkbox:checked');
-    if (checkboxes.length === 0) {
-        alert('请选择要删除的歌曲');
+    checkboxes.forEach(checkbox => {
+        selectedSongs.push(Number(checkbox.dataset.songId));
+    });
+
+    if (selectedSongs.length === 0) {
+        showNotification('请选择要删除的歌曲');
         return;
     }
 
-    const playlistId = document.querySelector('.playlist-detail').dataset.playlistId;
-    const userId = document.querySelector('.playlist-detail').dataset.userId;
-    const songIds = Array.from(checkboxes).map(checkbox => checkbox.dataset.songId);
-
     try {
-        const response = await fetch(`http://localhost:8080/user/${userId}/playlist/${playlistId}/songs`, {
+        const userData = JSON.parse(sessionStorage.getItem('userData'));
+        const response = await fetch(`http://localhost:8080/playlist/${userData.userId}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ songIds })
+            body: JSON.stringify({ songIds: selectedSongs })
         });
 
         const result = await response.json();
 
         if (result.code === 1) {
-            alert('删除成功');
-            location.reload(); // 刷新页面
+            showNotification('成功删除' + selectedSongs.length + '首歌曲');
+
+            location.reload(true);
         } else {
-            alert('删除失败: ' + result.message);
+            showNotification('删除失败: ' + result.message);
         }
     } catch (error) {
         console.error('删除歌曲失败:', error);
-        alert('删除歌曲失败');
+        showNotification('删除歌曲失败');
+    } finally {
+        exitDeleteMode();
     }
 }
 
-function playPlaylist(listSong) {
-    songs = listSong;
-    currentSong = songs[0];
-    currentSongIndex = 0;
-    playSongByIndex(currentSongIndex);
-    updatePlayerInfo(currentSong);
-}
-
-
-// 创建歌曲行（列表模式）
-function createSongRow(song, index, isRecent = false) {
+//  创建歌曲行
+function createSongRow(song, index, isRecent = false, showCheckbox = false) {
     const row = document.createElement('div');
     row.className = 'song-row';
     row.dataset.index = index;
+    row.dataset.songId = song.songId || song.id;
 
+    // 创建复选框HTML（仅删除模式显示）
+    const checkboxHtml = showCheckbox ?
+        `<div class="song-selector">
+            <input type="checkbox" class="song-checkbox" data-song-id="${song.songId || song.id}" 
+                style="display: none; margin-right: 10px;">
+        </div>` : '';
 
     row.innerHTML = `
         <div class="song-index">${index + 1 + (currentPage - 1) * songsPerPage}</div>
@@ -806,26 +810,57 @@ function createSongRow(song, index, isRecent = false) {
         <div class="song-album">${song.album}</div>
         <div class="song-time">${formatTime(song.duration)}</div>
         <div class="song-actions">
+            ${checkboxHtml}
             <button class="song-action-btn"><i class="fas fa-play"></i></button>
-            <button class="song-action-btn like-btn" data-song-id="${song.id}">
+            <button class="song-action-btn like-btn" data-song-id="${song.songId || song.id}">
             <i class="fas fa-heart ${song.isLiked ? 'is-liked-song' : ''}"></i></button>
         </div>
     `;
 
     // 添加喜欢/取消喜欢的事件监听
     row.querySelector('.like-btn').addEventListener('click', async (e) => {
-        e.stopPropagation(); // 阻止事件冒泡到行点击事件
+        e.stopPropagation();
         await toggleLikeSong(song);
     });
 
-    // 点击播放歌曲
-    row.addEventListener('click', () => {
+    // 播放按钮事件 - 修复播放问题
+    row.querySelector('.song-action-btn:not(.like-btn)').addEventListener('click', () => {
         playSongByIndex(index);
     });
+
+    // 修复整个行点击播放功能
+    row.addEventListener('click', (e) => {
+        // 排除按钮区域的点击
+        if (!e.target.closest('.song-actions')) {
+            playSongByIndex(index);
+        }
+    });
+
+    // 点击复选框选中行
+    const checkbox = row.querySelector('.song-checkbox');
+    if (checkbox) {
+        checkbox.addEventListener('change', function() {
+            if (this.checked) {
+                row.classList.add('selected');
+            } else {
+                row.classList.remove('selected');
+            }
+        });
+    }
 
     return row;
 }
 
+// 播放歌单
+function playPlaylist(listSong) {
+    songs = listSong;
+    currentSong = songs[0];
+    currentSongIndex = 0;
+    playSongByIndex(currentSongIndex);
+    updatePlayerInfo(currentSong);
+}
+
+// 添加喜欢/取消喜欢功能
 async function toggleLikeSong(song) {
     try {
         const userData = JSON.parse(sessionStorage.getItem('userData'));
@@ -868,22 +903,16 @@ async function toggleLikeSong(song) {
     }
 }
 
-// 新增的UI更新函数
+// UI更新函数
 function updateSongUI(songId, isLiked) {
     // 更新歌曲列表中的按钮状态
     const songElements = document.querySelectorAll(`[data-song-id="${songId}"]`);
     songElements.forEach(element => {
         const likeBtn = element.querySelector('.like-btn');
         if (likeBtn) {
-            likeBtn.textContent = isLiked ? '❤️' : '🤍';
-            likeBtn.dataset.liked = isLiked;
+            likeBtn.innerHTML = `<i class="fas fa-heart ${isLiked ? 'is-liked-song' : ''}"></i>`;
         }
     });
-
-    // 如果是喜欢歌曲页面，可能需要从DOM中移除
-    if (window.location.pathname.includes('liked-songs.html') && !isLiked) {
-        songElements.forEach(element => element.remove());
-    }
 }
 
 // 播放指定索引的歌曲
@@ -901,7 +930,6 @@ function playSongByIndex(index) {
         togglePlayPause(true);
 
         showNotification(`开始播放: ${currentSong.title} - ${currentSong.artist}`);
-
 
         // 如果播放的是喜欢的歌曲，高亮该行
         document.querySelectorAll('.song-row').forEach(row => {
