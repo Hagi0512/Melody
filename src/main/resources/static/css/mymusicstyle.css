@@ -1871,3 +1871,137 @@ body {
     opacity: 0.3;
     transition: 0s;
 }
+
+.playlist-selector {
+    display: none;
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    width: 280px;
+    background: #f0f8ff; /* 浅蓝色背景 */
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(173, 216, 230, 0.3); /* 浅蓝色阴影 */
+    border: 1px solid #b0e0e6; /* 浅蓝色边框 */
+    z-index: 100;
+}
+
+.selector-header {
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #c6e2ff; /* 更浅的蓝色分隔线 */
+    background: #e6f2ff; /* 浅蓝色标题背景 */
+    border-radius: 8px 8px 0 0;
+    color: #2a5885; /* 深蓝色文字 */
+}
+
+.close-selector {
+    background: none;
+    border: none;
+    color: #4b91d8; /* 蓝色关闭按钮 */
+    font-size: 20px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close-selector:hover {
+    color: #2a5885; /* 悬停时加深 */
+}
+
+.selector-list {
+    max-height: 300px;
+    overflow-y: auto;
+    background: #f8fcff; /* 最浅的列表背景 */
+}
+
+.playlist-option {
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    color: #3a6ea5; /* 中蓝色文字 */
+    border-bottom: 1px solid #d4e6f8; /* 浅蓝色分隔线 */
+    transition: all 0.2s;
+}
+
+.playlist-option:hover {
+    background: #d8eafc; /* 悬停浅蓝色 */
+}
+
+.playlist-option.selected {
+    background: #c1e1ff; /* 选中状态蓝色 */
+    color: #1a4b8c;
+}
+
+.playlist-option input[type="checkbox"] {
+    margin-right: 10px;
+    accent-color: #4b91d8; /* 复选框蓝色 */
+}
+
+.selector-actions {
+    padding: 12px 16px;
+    border-top: 1px solid #c6e2ff;
+    text-align: right;
+    background: #e6f2ff; /* 与标题同色 */
+    border-radius: 0 0 8px 8px;
+}
+
+#confirmSelection {
+    background: #4b91d8; /* 蓝色按钮 */
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+#confirmSelection:hover {
+    background: #3a7bc8; /* 悬停时加深 */
+}
+
+/* 加载状态样式 */
+.playlist-option.loading {
+    color: #7aa7d8;
+    font-style: italic;
+}
+
+.playlist-option.error {
+    color: #d84b4b;
+}
+
+.song-checkbox {
+    display: none;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+
+.confirm-delete-btn {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.confirm-delete-btn:hover {
+    background-color: #ff1a1a;
+}
+
+.delete-songs-btn {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.delete-songs-btn:hover {
+    background-color: #ff1a1a;
+}

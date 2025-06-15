@@ -19,5 +19,6 @@
         select songs.song_id, title, file_path, duration, artist, uploaded_at, album, cover_image
         from songs join playlist_songs on songs.song_id = playlist_songs.song_id
         where playlist_id = #{id}
+        order by playlist_songs.added_at desc
     </select>
 </mapper>

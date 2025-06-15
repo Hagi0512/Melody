@@ -6,4 +6,6 @@ import java.util.List;
 
 public interface PlaylistServce {
     List<Playlist> getPlaylist(int id);
+
+    void addSongById(int id, int songId);
 }

@@ -145,6 +145,21 @@
         <i class="fas fa-step-forward" id="nextBtn"></i>
         <i class="fas fa-repeat" id="repeatBtn"></i>
         <i class="fas fa-heart-o" id="likeCurrentSong"></i>
+        <div class="playlist-add-container">
+            <i class="fas fa-plus" id="addToPlaylistBtn"></i>
+            <div class="playlist-selector" id="playlistSelector">
+                <div class="selector-header">
+                    <span>添加到歌单</span>
+                    <button class="close-selector">&times;</button>
+                </div>
+                <div class="selector-list" id="playlistList">
+                    <!-- 动态加载的歌单选项 -->
+                </div>
+                <div class="selector-actions">
+                    <button id="confirmSelection">确认添加</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="volume">

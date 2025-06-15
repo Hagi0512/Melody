@@ -430,7 +430,6 @@ async function loadMyPlaylists(userData) {
         // 渲染歌单
         grid.innerHTML = '';
         result.data.forEach(playlist => {
-            console.log(playlist);
             grid.appendChild(createPlaylistCard(playlist));
         });
     } catch (error) {
@@ -594,7 +593,7 @@ async function renderPlaylistDetail(playlist) {
         '"': '&quot;'
     }[tag]));
 
-    // 安全构建HTML
+    // 安全构建HTML - 添加删除按钮
     const buildHeaderHTML = () => {
         const name = escapeHTML(playlist.name);
         const description = escapeHTML(playlist.description || '暂无描述');
@@ -623,6 +622,12 @@ async function renderPlaylistDetail(playlist) {
                     <div class="actions">
                         <button class="play-all-btn">
                             <i class="fas fa-play"></i> 播放全部
+                        </button>
+                        <button class="delete-songs-btn">
+                            <i class="fas fa-trash"></i> 删除歌曲
+                        </button>
+                        <button class="confirm-delete-btn" style="display: none;">
+                            <i class="fas fa-check"></i> 确认删除
                         </button>
                     </div>
                 </div>
@@ -661,6 +666,16 @@ async function renderPlaylistDetail(playlist) {
 
         listSongs.forEach((song, index) => {
             const songRow = createSongRow(song, index);
+
+            // 添加选择框（不修改createSongRow）
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.className = 'song-checkbox';
+            checkbox.dataset.songId = song.id;
+            checkbox.style.display = 'none'; // 默认隐藏
+            checkbox.style.marginRight = '10px';
+            songRow.insertBefore(checkbox, songRow.firstChild);
+
             songsContainer.appendChild(songRow);
         });
 
@@ -681,14 +696,84 @@ async function renderPlaylistDetail(playlist) {
             }
         };
 
+        addSafeListener('.delete-songs-btn', 'click', () => {
+            toggleDeleteMode();
+            const confirmBtn = container.querySelector('.confirm-delete-btn');
+            confirmBtn.style.display = confirmBtn.style.display === 'none' ? 'inline-block' : 'none';
+        });
+
+        addSafeListener('.confirm-delete-btn', 'click', deleteSelectedSongs);
+
         addSafeListener('.play-all-btn', 'click', () => playPlaylist(listSongs));
         addSafeListener('.cover-overlay', 'click', () => playPlaylist(listSongs));
         addSafeListener('.back-btn', 'click', () => {location.reload(true);});
 
+        // 添加删除功能
+        addSafeListener('.delete-songs-btn', 'click', toggleDeleteMode);
+
+        // 存储当前歌单信息
+        container.dataset.playlistId = playlist.id;
+        container.dataset.userId = playlist.userId;
 
     } catch (error) {
         console.error('Failed to render playlist:', error);
         mainContent.innerHTML = '<div class="error">加载歌单失败</div>';
+    }
+}
+
+// 切换删除模式
+function toggleDeleteMode() {
+    const checkboxes = document.querySelectorAll('.song-checkbox');
+    const deleteBtn = document.querySelector('.delete-songs-btn');
+
+    if (deleteBtn.textContent.includes('取消')) {
+        // 退出删除模式
+        checkboxes.forEach(checkbox => {
+            checkbox.style.display = 'none';
+            checkbox.checked = false;
+        });
+        deleteBtn.innerHTML = '<i class="fas fa-trash"></i> 删除歌曲';
+    } else {
+        // 进入删除模式
+        checkboxes.forEach(checkbox => {
+            checkbox.style.display = 'block';
+        });
+        deleteBtn.innerHTML = '<i class="fas fa-times"></i> 取消';
+    }
+}
+
+// 删除选中的歌曲
+async function deleteSelectedSongs() {
+    const checkboxes = document.querySelectorAll('.song-checkbox:checked');
+    if (checkboxes.length === 0) {
+        alert('请选择要删除的歌曲');
+        return;
+    }
+
+    const playlistId = document.querySelector('.playlist-detail').dataset.playlistId;
+    const userId = document.querySelector('.playlist-detail').dataset.userId;
+    const songIds = Array.from(checkboxes).map(checkbox => checkbox.dataset.songId);
+
+    try {
+        const response = await fetch(`http://localhost:8080/user/${userId}/playlist/${playlistId}/songs`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ songIds })
+        });
+
+        const result = await response.json();
+
+        if (result.code === 1) {
+            alert('删除成功');
+            location.reload(); // 刷新页面
+        } else {
+            alert('删除失败: ' + result.message);
+        }
+    } catch (error) {
+        console.error('删除歌曲失败:', error);
+        alert('删除歌曲失败');
     }
 }
 
@@ -704,7 +789,6 @@ function playPlaylist(listSong) {
 // 创建歌曲行（列表模式）
 function createSongRow(song, index, isRecent = false) {
     const row = document.createElement('div');
-    console.log(song);
     row.className = 'song-row';
     row.dataset.index = index;
 
@@ -1100,3 +1184,121 @@ function renderSearchPagination() {
     pageInfo.textContent = `共 ${searchTotalResults} 条结果，${searchTotalPages} 页`;
     pagination.appendChild(pageInfo);
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    const addBtn = document.getElementById('addToPlaylistBtn');
+    const selector = document.getElementById('playlistSelector');
+    const closeBtn = selector.querySelector('.close-selector');
+    const confirmBtn = document.getElementById('confirmSelection');
+    const playlistList = document.getElementById('playlistList');
+
+    let selectedPlaylists = new Set();
+
+    // 点击加号打开选择器
+    addBtn.addEventListener('click', function() {
+        selector.style.display = 'block';
+        if (playlistList.children.length === 0) {
+            const userData = JSON.parse(sessionStorage.getItem('userData'));
+            fetchPlaylists(userData);
+        }
+    });
+
+    // 关闭选择器
+    closeBtn.addEventListener('click', closeSelector);
+
+    // 确认选择
+    confirmBtn.addEventListener('click', function() {
+        if (selectedPlaylists.size > 0) {
+            addToPlaylists([...selectedPlaylists]);
+            closeSelector();
+        } else {
+            alert('请至少选择一个歌单');
+        }
+    });
+
+    // 关闭选择器函数
+    function closeSelector() {
+        selector.style.display = 'none';
+        selectedPlaylists.clear();
+        // 清除所有选中状态
+        document.querySelectorAll('.playlist-option').forEach(opt => {
+            opt.classList.remove('selected');
+            opt.querySelector('input').checked = false;
+        });
+    }
+
+    // 从后端获取歌单数据
+    function fetchPlaylists(userData) {
+        fetch(`http://localhost:8080/playlist/${userData.userId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(responseData => {
+                // 检查响应结构
+                if (responseData.code !== 1 || !Array.isArray(responseData.data)) {
+                    throw new Error('Invalid response format');
+                }
+
+                // 使用 responseData.data 作为歌单列表
+                renderPlaylists(responseData.data);
+            })
+            .catch(error => {
+                console.error('Error fetching playlists:', error);
+                showNotification('无法加载歌单');
+            });
+    }
+
+    // 渲染歌单选项（多选模式）
+    function renderPlaylists(playlists) {
+        playlistList.innerHTML = '';
+
+        playlists.forEach(playlist => {
+            const option = document.createElement('label');
+            option.className = 'playlist-option';
+            option.innerHTML = `
+                <input type="checkbox" value="${playlist.playlistId}">
+                ${playlist.name} (${playlist.songCount}首)
+            `;
+
+            option.addEventListener('click', function(e) {
+                if (e.target.tagName !== 'INPUT') return;
+
+                const checkbox = e.target;
+                if (checkbox.checked) {
+                    selectedPlaylists.add(playlist.playlistId);
+                    option.classList.add('selected');
+                } else {
+                    selectedPlaylists.delete(playlist.playlistId);
+                    option.classList.remove('selected');
+                }
+            });
+
+            playlistList.appendChild(option);
+        });
+    }
+
+    // 添加到多个歌单
+    function addToPlaylists(playlistIds) {
+        const userData = JSON.parse(sessionStorage.getItem('userData'));
+        Promise.all(playlistIds.map(id =>
+            fetch(`http://localhost:8080/playlist/${userData.userId}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ playlistId: id, songId: currentSong.songId })
+            })
+        ))
+            .then(responses => Promise.all(responses.map(r => r.json())))
+            .then(results => {
+                const successCount = results.filter(r => r.code === 1).length;
+                showNotification(`已添加到 ${successCount} 个歌单`);
+                loadMyPlaylists(userData);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showNotification('添加失败');
+            });
+    }
+});

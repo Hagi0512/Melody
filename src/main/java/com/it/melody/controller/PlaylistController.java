@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/playlist")
@@ -23,5 +24,12 @@ public class PlaylistController {
     public Result getPlaylist(@PathVariable int id){
         List<Playlist> playlists = playlistServce.getPlaylist(id);
         return Result.success(playlists);
+    }
+
+    // 添加歌单歌曲
+    @PostMapping("/{id}")
+    public Result addSong(@RequestBody Map<String, Integer> info){
+        playlistServce.addSongById(info.get("playlistId"), info.get("songId"));
+        return Result.success();
     }
 }

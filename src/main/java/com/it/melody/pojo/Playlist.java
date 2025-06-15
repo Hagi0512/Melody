@@ -17,6 +17,7 @@ public class Playlist {
     private LocalDateTime createdAt;
     private int songCount;
     private String userName;
+    private String cover;
 
     private List<Songs> songs;
 }

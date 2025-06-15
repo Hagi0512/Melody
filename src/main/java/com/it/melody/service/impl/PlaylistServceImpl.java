@@ -24,10 +24,18 @@ public class PlaylistServceImpl implements PlaylistServce {
     public List<Playlist> getPlaylist(int id) {
         List<Playlist> playlists = playlistMapper.getPlaylistById(id);
         for (Playlist playlist : playlists){
-            playlist.setSongs(songService.getSongsByPlaylistId(id));
+            playlist.setSongs(songService.getSongsByPlaylistId(playlist.getPlaylistId()));
             playlist.setSongCount(playlist.getSongs().size());
-            playlist.setUserName(userMapper.getUserById(playlist.getUserId()));
+            playlist.setUserName(userMapper.getUserById(id));
+            if (!playlist.getSongs().isEmpty()) {
+                playlist.setCover(playlist.getSongs().get(0).getCover());
+            }
         }
         return playlists;
+    }
+
+    @Override
+    public void addSongById(int id, int songId) {
+        playlistMapper.addSongById(id, songId);
     }
 }

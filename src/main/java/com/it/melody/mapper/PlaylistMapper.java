@@ -8,4 +8,6 @@ import java.util.List;
 @Mapper
 public interface PlaylistMapper {
     List<Playlist> getPlaylistById(int id);
+
+    void addSongById(int id, int songId);
 }
