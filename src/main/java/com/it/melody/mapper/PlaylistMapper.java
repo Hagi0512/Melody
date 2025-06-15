@@ -16,4 +16,6 @@ public interface PlaylistMapper {
     void updatePlaylistById(int id, String name, String description);
 
     Playlist getPlaylistByListId(int id);
+
+    void deletePlaylistById(int id);
 }

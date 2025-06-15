@@ -61,4 +61,11 @@ public class PlaylistController {
         Playlist playlist = playlistService.getPlaylistById(id);
         return Result.success(playlist);
     }
+
+    // 删除歌单
+    @DeleteMapping("/{id}/list")
+    public Result deletePlaylist(@PathVariable int id){
+        playlistService.deletePlaylist(id);
+        return Result.success();
+    }
 }

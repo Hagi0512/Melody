@@ -20,6 +20,11 @@
         where playlist_id=#{id}
     </update>
 
+    <delete id="deletePlaylistById">
+        delete from playlists
+        where playlist_id= #{id}
+    </delete>
+
     <select id="getPlaylistById" resultType="com.it.melody.pojo.Playlist">
         select playlist_id,name,user_id,created_at,description
         from playlists

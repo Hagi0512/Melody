@@ -108,18 +108,6 @@
     </div>
 
 
-
-
-    <!-- 最近播放 -->
-    <div class="section">
-        <div class="section-header">
-            <h2>最近播放</h2>
-            <div class="more">查看更多 <i class="fas fa-chevron-right"></i></div>
-        </div>
-        <div id="recentSongs" class="songs-list">
-            <!-- JS动态加载 -->
-        </div>
-    </div>
 </div>
 
 <!--创建歌单表单-->
@@ -147,6 +135,17 @@
             <button type="button" class="modal-button submit-button" id="submitButton">
                 <i class="fas fa-check"></i> <span id="submitButtonText">创建歌单</span>
             </button>
+        </div>
+    </div>
+</div>
+
+<!-- 确认删除弹窗 -->
+<div class="delete-confirm-modal" id="deleteConfirmModal" style="display:none;">
+    <div class="modal-content">
+        <p>确定要删除这个歌单吗？此操作不可撤销。</p>
+        <div class="modal-actions">
+            <button class="confirm-delete-playlist-btn" id="confirmDeletePlaylistBtn">确认删除</button>
+            <button class="cancel-delete-playlist-btn" id="cancelDeletePlaylistBtn">取消</button>
         </div>
     </div>
 </div>

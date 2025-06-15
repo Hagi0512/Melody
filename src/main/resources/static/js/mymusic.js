@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 初始化
     loadMyPlaylists(userData);
     loadLikedSongs(userData, currentPage);
-    loadRecentlyPlayed(userData);
+    //loadRecentlyPlayed(userData);
 
     // 初始化音频源
     audio.src = '';
@@ -502,23 +502,23 @@ document.getElementById('nextPage').addEventListener('click', () => {
 });
 
 // 加载最近播放
-async function loadRecentlyPlayed() {
-    try {
-        const list = document.getElementById('recentSongs');
-
-        // 使用模拟数据
-        const data = await mockApiData('/api/recent-songs');
-
-        // 渲染最近播放的歌曲
-        list.innerHTML = '';
-        data.forEach((song, index) => {
-            list.appendChild(createSongRow(song, index, true));
-        });
-    } catch (error) {
-        console.error('Error loading recently played:', error);
-        document.getElementById('recentSongs').innerHTML = '<p class="error">加载最近播放失败</p>';
-    }
-}
+// async function loadRecentlyPlayed() {
+//     try {
+//         const list = document.getElementById('recentSongs');
+//
+//         // 使用模拟数据
+//         const data = await mockApiData('/api/recent-songs');
+//
+//         // 渲染最近播放的歌曲
+//         list.innerHTML = '';
+//         data.forEach((song, index) => {
+//             list.appendChild(createSongRow(song, index, true));
+//         });
+//     } catch (error) {
+//         console.error('Error loading recently played:', error);
+//         document.getElementById('recentSongs').innerHTML = '<p class="error">加载最近播放失败</p>';
+//     }
+// }
 
 // 创建歌单卡片
 function createPlaylistCard(playlist) {
@@ -549,6 +549,8 @@ function createPlaylistCard(playlist) {
     return card;
 }
 
+
+// 加载歌单详情
 async function loadPlaylistDetail(playlist) {
     try {
         // 显示加载状态
@@ -577,6 +579,7 @@ async function loadPlaylistDetail(playlist) {
     }
 }
 
+//  渲染歌单详情
 async function renderPlaylistDetail(playlist) {
     const mainContent = document.getElementById('main-content');
     if (!mainContent) return;
@@ -623,6 +626,9 @@ async function renderPlaylistDetail(playlist) {
                     <button class="edit-playlist-btn" id="editPlaylistBtn">
                         <i class="fas fa-edit"></i> 修改歌单
                     </button>
+                    <button class="delete-playlist-btn" id="deletePlaylistBtn">
+                        <i class="fas fa-trash"></i> 删除歌单
+                    </button>
                     <button class="delete-songs-btn" id="deleteSongsBtn">
                         <i class="fas fa-trash"></i> 删除歌曲
                     </button>
@@ -635,7 +641,7 @@ async function renderPlaylistDetail(playlist) {
                 </div>
             </div>
         </div>
-    `;
+        `;
     };
 
     try {
@@ -703,6 +709,47 @@ async function renderPlaylistDetail(playlist) {
                 playlist.name, // 当前歌单名称
                 playlist.description // 当前歌单描述
             );
+        });
+
+        // 添加删除歌单功能的事件监听
+        const deletePlaylistBtn = document.getElementById('deletePlaylistBtn');
+        const deleteConfirmModal = document.getElementById('deleteConfirmModal');
+        const confirmDeletePlaylistBtn = document.getElementById('confirmDeletePlaylistBtn');
+        const cancelDeletePlaylistBtn = document.getElementById('cancelDeletePlaylistBtn');
+
+        deletePlaylistBtn.addEventListener('click', () => {
+            deleteConfirmModal.style.display = 'flex'; // 显示弹窗
+        });
+
+        confirmDeletePlaylistBtn.addEventListener('click', async () => {
+            try {
+                const playlistId = playlist.playlistId || playlist.id;
+                const userData = JSON.parse(sessionStorage.getItem('userData'));
+
+                // 发送删除请求到后端
+                const response = await fetch(`http://localhost:8080/playlist/${playlistId}/list`, {
+                    method: 'DELETE'
+                });
+
+                const result = await response.json();
+
+                if (result.code === 1) {
+                    // 删除成功，返回上一页或刷新页面
+                    showNotification('歌单删除成功');
+                    location.reload(true);
+                } else {
+                    showNotification('删除失败: ' + result.msg);
+                }
+            } catch (error) {
+                console.error('删除歌单失败:', error);
+                showNotification('删除歌单时出错');
+            } finally {
+                deleteConfirmModal.style.display = 'none'; // 隐藏弹窗
+            }
+        });
+
+        cancelDeletePlaylistBtn.addEventListener('click', () => {
+            deleteConfirmModal.style.display = 'none'; // 隐藏弹窗
         });
 
         // 存储当前歌单信息
@@ -1448,15 +1495,16 @@ submitBtn.addEventListener('click', async () => {
     if (currentAction === 'create') {
         success = await createPlaylist(name, description, userData);
         message = success ? `歌单 "${name}" 创建成功！` : `歌单 "${name}" 创建失败！`;
+        await loadMyPlaylists(userData);
     } else if (currentAction === 'edit') {
         success = await updatePlaylist(currentPlaylistId, name, description, userData);
         message = success ? `歌单 "${name}" 更新成功！` : `歌单 "${name}" 更新失败！`;
+        const response = await fetch(`http://localhost:8080/playlist/${currentPlaylistId}/list`);
+        const data = await response.json();
+        await renderPlaylistDetail(data.data);
     }
 
     await showNotification(message);
-    const response = await fetch(`http://localhost:8080/playlist/${currentPlaylistId}/list`);
-    const data = await response.json();
-    await renderPlaylistDetail(data.data);
     await closeModal();
 });
 

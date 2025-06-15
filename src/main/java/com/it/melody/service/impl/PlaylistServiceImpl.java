@@ -57,6 +57,11 @@ public class PlaylistServiceImpl implements PlaylistService {
         return setPlaylistInfo(playlistMapper.getPlaylistByListId(id));
     }
 
+    @Override
+    public void deletePlaylist(int id) {
+        playlistMapper.deletePlaylistById(id);
+    }
+
     public Playlist setPlaylistInfo(Playlist playlist) {
         playlist.setSongs(songService.getSongsByPlaylistId(playlist.getPlaylistId()));
         playlist.setSongCount(playlist.getSongs().size());
