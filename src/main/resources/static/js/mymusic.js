@@ -343,7 +343,7 @@ async function searchMusic(query, page = 1) {
                 resultsGrid.appendChild(createSongCard(song, index));
             });
 
-            document.querySelector('.back-button').addEventListener('click', restoreOriginalState);
+            document.querySelector('.back-button').addEventListener('click', () => {location.reload(true);});
         } else {
             let errorMessage = "未找到相关歌曲";
             if (result.code !== 1) {
@@ -527,31 +527,184 @@ function createPlaylistCard(playlist) {
     card.className = 'music-card';
     card.innerHTML = `
         <div class="card-img">
-            <img src="${playlist.cover}" alt="${playlist.title}">
+            <img src="${playlist.cover}" alt="${playlist.name}">
             <div class="play-btn">
                 <i class="fas fa-play"></i>
             </div>
-            <div class="play-count">
-                <i class="fas fa-play"></i> ${formatPlayCount(playlist.playCount)}
-            </div>
         </div>
         <div class="card-info">
-            <div class="card-title">${playlist.title}</div>
-            <div class="card-artist">${playlist.songs}首歌曲</div>
+            <div class="card-title">${playlist.name}</div>
+            <div class="card-artist">${playlist.songCount}首歌曲</div>
         </div>
     `;
 
     // 点击播放列表
-    card.addEventListener('click', () => {
-        showNotification(`播放歌单: ${playlist.title}`);
+    card.addEventListener('click', (e) => {
+        // 阻止事件冒泡到可能的父元素
+        e.stopPropagation();
+
+        // 使用历史API进行页面跳转（保持单页应用体验）
+        //const state = { playlistId: playlist.playlistId };
+        //history.pushState(state, "", `/playlist?userId=${playlist.playlistId}`);
+
+        // 加载该歌单详情内容
+        loadPlaylistDetail(playlist);
     });
 
     return card;
 }
 
+async function loadPlaylistDetail(playlist) {
+    try {
+        // 显示加载状态
+        const mainContent = document.getElementById('main-content');
+        if (!mainContent) {
+            console.error('main-content element not found');
+            return;
+        }
+        mainContent.innerHTML = `
+            <div class="loading-container">
+                <div class="loading-spinner"></div>
+                <p>加载中...</p>
+            </div>`;
+
+
+        // 渲染歌单详情页
+        renderPlaylistDetail(playlist);
+    } catch (error) {
+        console.error('加载歌单详情失败:', error);
+        document.getElementById('main-content').innerHTML = `
+            <div class="error-container">
+                <i class="fas fa-exclamation-triangle"></i>
+                <p>加载歌单失败: ${error.message}</p>
+                <button class="retry-btn" onclick="location.reload()">重试</button>
+            </div>`;
+    }
+}
+async function renderPlaylistDetail(playlist) {
+    const mainContent = document.getElementById('main-content');
+    if (!mainContent) return;
+
+    // 转义HTML函数
+    const escapeHTML = str => str.replace(/[&<>'"]/g, tag => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        "'": '&#39;',
+        '"': '&quot;'
+    }[tag]));
+
+    // 安全构建HTML
+    const buildHeaderHTML = () => {
+        const name = escapeHTML(playlist.name);
+        const description = escapeHTML(playlist.description || '暂无描述');
+        const userName = escapeHTML(playlist.userName);
+        const date = new Date(playlist.createdAt).toLocaleDateString('zh-CN');
+
+        return `
+            <div class="playlist-header">
+                <button class="back-btn">
+                    <i class="fas fa-arrow-left"></i> 返回
+                </button>
+                <div class="cover-container">
+                    <img src="${escapeHTML(playlist.cover || './images/null.jpg')}" alt="${name}" class="playlist-cover">
+                    <div class="cover-overlay">
+                        <i class="fas fa-play"></i>
+                    </div>
+                </div>
+                <div class="playlist-info">
+                    <h1>${name}</h1>
+                    <p class="description">${description}</p>
+                    <div class="meta">
+                        <span class="creator"><i class="fas fa-user"></i> ${userName}</span>
+                        <span class="count"><i class="fas fa-music"></i> ${playlist.songCount}首</span>
+                        <span class="date"><i class="far fa-calendar-alt"></i> ${date}</span>
+                    </div>
+                    <div class="actions">
+                        <button class="play-all-btn">
+                            <i class="fas fa-play"></i> 播放全部
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    };
+
+    try {
+        const listSongs = await Promise.allSettled(
+            playlist.songs.map(async song => {
+                try {
+                    const response = await fetch(`http://localhost:8080/user/${playlist.userId}/liked-song/${song.songId}`);
+                    const result = await response.json();
+                    return { ...song, isLiked: result.code === 1 };
+                } catch (error) {
+                    console.error('Failed to fetch like status:', error);
+                    return { ...song, isLiked: false };
+                }
+            })
+        ).then(results =>
+            results.map(result => result.status === 'fulfilled' ? result.value : {
+                ...result.reason.song,
+                isLiked: false
+            })
+        );
+
+        // 使用DocumentFragment提高性能
+        const fragment = document.createDocumentFragment();
+        const container = document.createElement('div');
+        container.className = 'playlist-detail';
+
+        container.innerHTML = buildHeaderHTML();
+
+        const songsContainer = document.createElement('div');
+        songsContainer.className = 'playlist-songs';
+
+        listSongs.forEach((song, index) => {
+            const songRow = createSongRow(song, index);
+            songsContainer.appendChild(songRow);
+        });
+
+        container.appendChild(songsContainer);
+        fragment.appendChild(container);
+
+        // 清除旧内容
+        while (mainContent.firstChild) {
+            mainContent.removeChild(mainContent.firstChild);
+        }
+        mainContent.appendChild(fragment);
+
+        // 安全添加事件监听器
+        const addSafeListener = (selector, event, handler) => {
+            const element = container.querySelector(selector);
+            if (element) {
+                element.addEventListener(event, handler);
+            }
+        };
+
+        addSafeListener('.play-all-btn', 'click', () => playPlaylist(listSongs));
+        addSafeListener('.cover-overlay', 'click', () => playPlaylist(listSongs));
+        addSafeListener('.back-btn', 'click', () => {location.reload(true);});
+
+
+    } catch (error) {
+        console.error('Failed to render playlist:', error);
+        mainContent.innerHTML = '<div class="error">加载歌单失败</div>';
+    }
+}
+
+function playPlaylist(listSong) {
+    songs = listSong;
+    currentSong = songs[0];
+    currentSongIndex = 0;
+    playSongByIndex(currentSongIndex);
+    updatePlayerInfo(currentSong);
+}
+
+
 // 创建歌曲行（列表模式）
 function createSongRow(song, index, isRecent = false) {
     const row = document.createElement('div');
+    console.log(song);
     row.className = 'song-row';
     row.dataset.index = index;
 

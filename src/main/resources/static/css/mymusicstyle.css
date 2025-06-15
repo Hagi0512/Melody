@@ -1609,3 +1609,265 @@ body {
 .page-jump-btn:hover {
     background-color: #e8eaed;
 }
+
+/* 歌单头部整体样式 - 淡蓝色主题 */
+.playlist-header {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 20px 30px;
+    background: linear-gradient(135deg, rgba(240, 248, 255, 0.9) 0%, rgba(230, 240, 250, 0.95) 100%);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(100, 150, 200, 0.15);
+    color: #2c3e50;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 30px;
+    border: 1px solid rgba(200, 220, 240, 0.6);
+}
+
+/* 返回按钮样式 - 淡蓝色系 */
+.back-btn {
+    /* 布局定位 */
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 10;
+
+    /* 视觉样式 */
+    background: rgba(100, 160, 220, 0.1);
+    border: 1px solid rgba(100, 160, 220, 0.3);
+    color: #4a6fa8;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+
+    /* 内部元素 */
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    /* 特效 */
+    backdrop-filter: blur(5px);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(100, 150, 200, 0.1);
+}
+
+/* 悬停状态 */
+.back-btn:hover {
+    background: rgba(100, 160, 220, 0.2);
+    border-color: rgba(100, 160, 220, 0.5);
+    box-shadow: 0 3px 8px rgba(100, 150, 200, 0.2);
+}
+
+/* 点击状态 */
+.back-btn:active {
+    transform: scale(0.98);
+    background: rgba(100, 160, 220, 0.15);
+}
+
+/* 图标样式 */
+.back-btn i {
+    font-size: 12px;
+    color: #4a6fa8;
+    transition: transform 0.3s ease;
+}
+
+/* 悬停时图标轻微左移 */
+.back-btn:hover i {
+    transform: translateX(-2px);
+}
+/* 封面容器样式 */
+.cover-container {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 16px rgba(100, 150, 200, 0.2);
+    transition: transform 0.3s ease;
+    align-self: center;
+    border: 1px solid rgba(200, 220, 240, 0.8);
+}
+
+.cover-container:hover {
+    transform: scale(1.03);
+    box-shadow: 0 10px 20px rgba(100, 150, 200, 0.3);
+}
+
+.playlist-cover {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* 封面悬停播放按钮 - 淡蓝色系 */
+.cover-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(100, 160, 220, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    cursor: pointer;
+}
+
+.cover-overlay i {
+    font-size: 48px;
+    color: rgba(255, 255, 255, 0.9);
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.cover-container:hover .cover-overlay {
+    opacity: 1;
+}
+
+.cover-overlay:hover i {
+    transform: scale(1.1);
+    color: #fff;
+}
+
+/* 歌单信息区域 - 淡蓝色文字 */
+.playlist-info {
+    text-align: center;
+}
+
+.playlist-info h1 {
+    font-size: 2.2rem;
+    margin: 0 0 12px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: #2c3e50;
+}
+
+.playlist-info .description {
+    font-size: 1rem;
+    color: #5a7a9a;
+    margin: 0 auto 20px;
+    max-width: 600px;
+    line-height: 1.5;
+}
+
+/* 元信息样式 - 淡蓝色系 */
+.meta {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+    font-size: 0.9rem;
+    color: #6a8ab0;
+}
+
+.meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.meta i {
+    font-size: 0.8em;
+    color: #8aa8c8;
+}
+
+/* 播放全部按钮 - 淡蓝色主按钮 */
+.play-all-btn {
+    background: linear-gradient(135deg, #64b5f6 0%, #42a5f5 100%);
+    color: white;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 12px rgba(66, 165, 245, 0.3);
+}
+
+.play-all-btn:hover {
+    background: linear-gradient(135deg, #42a5f5 0%, #1e88e5 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(66, 165, 245, 0.4);
+}
+
+.play-all-btn:active {
+    transform: translateY(0);
+}
+
+.play-all-btn i {
+    font-size: 0.9em;
+}
+
+/* 响应式设计 */
+@media (min-width: 768px) {
+    .playlist-header {
+        flex-direction: row;
+        align-items: flex-end;
+        padding: 30px;
+    }
+
+    .cover-container {
+        width: 240px;
+        height: 240px;
+        align-self: flex-end;
+    }
+
+    .playlist-info {
+        text-align: left;
+        flex: 1;
+        padding-left: 30px;
+    }
+
+    .back-btn {
+        top: 15px;
+        right: 15px;
+        padding: 6px 14px;
+    }
+
+    .meta {
+        justify-content: flex-start;
+    }
+
+    .actions {
+        justify-content: flex-start;
+    }
+}
+
+/* 添加水波纹效果 */
+.play-all-btn, .back-btn, .cover-overlay {
+    position: relative;
+    overflow: hidden;
+}
+
+.play-all-btn:after, .back-btn:after, .cover-overlay:after {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    background-image: radial-gradient(circle, #fff 10%, transparent 10%);
+    background-repeat: no-repeat;
+    background-position: 50%;
+    transform: scale(10,10);
+    opacity: 0;
+    transition: transform .5s, opacity 1s;
+}
+
+.play-all-btn:active:after, .back-btn:active:after, .cover-overlay:active:after {
+    transform: scale(0,0);
+    opacity: 0.3;
+    transition: 0s;
+}
