@@ -71,14 +71,14 @@ function setupEventListeners() {
     });
 
     // 头像下拉菜单
-    document.getElementById('userAvatar').addEventListener('click', function(e) {
+    document.getElementById('userAvatar').addEventListener('click', function (e) {
         e.stopPropagation();
         const dropdown = document.querySelector('.dropdown-menu');
         dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
     });
 
     // 退出登录
-    document.getElementById('logout').addEventListener('click', function(e) {
+    document.getElementById('logout').addEventListener('click', function (e) {
         e.preventDefault();
         showNotification('您已退出登录');
         document.querySelector('.dropdown-menu').style.display = 'none';
@@ -86,7 +86,7 @@ function setupEventListeners() {
     });
 
     // 关闭下拉菜单（点击页面其他地方）
-    document.addEventListener('click', function(e) {
+    document.addEventListener('click', function (e) {
         const dropdown = document.querySelector('.dropdown-menu');
         if (!e.target.closest('.user-avatar') && dropdown.style.display === 'block') {
             dropdown.style.display = 'none';
@@ -262,7 +262,7 @@ function setupEventListeners() {
     });
 
     // 播放全部按钮
-    document.querySelector('.btn-play-all').addEventListener('click', function() {
+    document.querySelector('.btn-play-all').addEventListener('click', function () {
         if (songs.length > 0) {
             let randomIndex;
             do {
@@ -317,7 +317,7 @@ async function searchMusic(query, page = 1) {
                     };
                 }
             }));
-            searchTotalResults  = data.total;
+            searchTotalResults = data.total;
             searchTotalPages = Math.ceil(searchTotalResults / searchPageSize);
 
             // 渲染搜索结果
@@ -341,7 +341,9 @@ async function searchMusic(query, page = 1) {
                 resultsGrid.appendChild(createSongCard(song, index));
             });
 
-            document.querySelector('.back-button').addEventListener('click', () => {location.reload(true);});
+            document.querySelector('.back-button').addEventListener('click', () => {
+                location.reload(true);
+            });
         } else {
             let errorMessage = "未找到相关歌曲";
             if (result.code !== 1) {
@@ -448,7 +450,7 @@ async function loadLikedSongs(userData, page) {
             isLiked: true
         }));
         totalSongs = result.data.total;
-        totalPages  = Math.ceil(totalSongs / songsPerPage);
+        totalPages = Math.ceil(totalSongs / songsPerPage);
         document.getElementById('stat').textContent = totalSongs + '首歌曲';
         const coverImg = document.getElementById('cover-image');
         coverImg.src = songs[0].cover || './images/null.jpg';
@@ -574,6 +576,7 @@ async function loadPlaylistDetail(playlist) {
             </div>`;
     }
 }
+
 async function renderPlaylistDetail(playlist) {
     const mainContent = document.getElementById('main-content');
     if (!mainContent) return;
@@ -595,41 +598,44 @@ async function renderPlaylistDetail(playlist) {
         const date = new Date(playlist.createdAt).toLocaleDateString('zh-CN');
 
         return `
-            <div class="playlist-header">
-                <button class="back-btn">
-                    <i class="fas fa-arrow-left"></i> 返回
-                </button>
-                <div class="cover-container">
-                    <img src="${escapeHTML(playlist.cover || './images/null.jpg')}" alt="${name}" class="playlist-cover">
-                    <div class="cover-overlay">
-                        <i class="fas fa-play"></i>
-                    </div>
-                </div>
-                <div class="playlist-info">
-                    <h1>${name}</h1>
-                    <p class="description">${description}</p>
-                    <div class="meta">
-                        <span class="creator"><i class="fas fa-user"></i> ${userName}</span>
-                        <span class="count"><i class="fas fa-music"></i> ${playlist.songCount}首</span>
-                        <span class="date"><i class="far fa-calendar-alt"></i> ${date}</span>
-                    </div>
-                    <div class="actions">
-                        <button class="play-all-btn">
-                            <i class="fas fa-play"></i> 播放全部
-                        </button>
-                        <button class="delete-songs-btn" id="deleteSongsBtn">
-                            <i class="fas fa-trash"></i> 删除歌曲
-                        </button>
-                        <button class="confirm-delete-btn" id="confirmDeleteBtn" style="display:none;">
-                            <i class="fas fa-check"></i> 确认删除
-                        </button>
-                        <button class="cancel-delete-btn" id="cancelDeleteBtn" style="display:none;">
-                            <i class="fas fa-times"></i> 取消
-                        </button>
-                    </div>
+        <div class="playlist-header">
+            <button class="back-btn">
+                <i class="fas fa-arrow-left"></i> 返回
+            </button>
+            <div class="cover-container">
+                <img src="${escapeHTML(playlist.cover || './images/null.jpg')}" alt="${name}" class="playlist-cover">
+                <div class="cover-overlay">
+                    <i class="fas fa-play"></i>
                 </div>
             </div>
-        `;
+            <div class="playlist-info">
+                <h1>${name}</h1>
+                <p class="description">${description}</p>
+                <div class="meta">
+                    <span class="creator"><i class="fas fa-user"></i> ${userName}</span>
+                    <span class="count"><i class="fas fa-music"></i> ${playlist.songCount}首</span>
+                    <span class="date"><i class="far fa-calendar-alt"></i> ${date}</span>
+                </div>
+                <div class="actions">
+                    <button class="play-all-btn">
+                        <i class="fas fa-play"></i> 播放全部
+                    </button>
+                    <button class="edit-playlist-btn" id="editPlaylistBtn">
+                        <i class="fas fa-edit"></i> 修改歌单
+                    </button>
+                    <button class="delete-songs-btn" id="deleteSongsBtn">
+                        <i class="fas fa-trash"></i> 删除歌曲
+                    </button>
+                    <button class="confirm-delete-btn" id="confirmDeleteBtn" style="display:none;">
+                        <i class="fas fa-check"></i> 确认删除
+                    </button>
+                    <button class="cancel-delete-btn" id="cancelDeleteBtn" style="display:none;">
+                        <i class="fas fa-times"></i> 取消
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
     };
 
     try {
@@ -638,10 +644,10 @@ async function renderPlaylistDetail(playlist) {
                 try {
                     const response = await fetch(`http://localhost:8080/user/${playlist.userId}/liked-song/${song.songId}`);
                     const result = await response.json();
-                    return { ...song, isLiked: result.code === 1 };
+                    return {...song, isLiked: result.code === 1};
                 } catch (error) {
                     console.error('Failed to fetch like status:', error);
-                    return { ...song, isLiked: false };
+                    return {...song, isLiked: false};
                 }
             })
         ).then(results =>
@@ -681,12 +687,23 @@ async function renderPlaylistDetail(playlist) {
         // 添加事件监听器
         container.querySelector('.play-all-btn').addEventListener('click', () => playPlaylist(listSongs));
         container.querySelector('.cover-overlay').addEventListener('click', () => playPlaylist(listSongs));
-        container.querySelector('.back-btn').addEventListener('click', () => {location.reload(true);});
+        container.querySelector('.back-btn').addEventListener('click', () => {
+            location.reload(true);
+        });
 
         // 添加删除功能的事件监听
         document.getElementById('deleteSongsBtn').addEventListener('click', enterDeleteMode);
         document.getElementById('confirmDeleteBtn').addEventListener('click', deleteSelectedSongs);
         document.getElementById('cancelDeleteBtn').addEventListener('click', exitDeleteMode);
+
+        // 添加修改歌单按钮的事件监听
+        document.getElementById('editPlaylistBtn').addEventListener('click', () => {
+            openEditModal(
+                playlist.playlistId || playlist.id, // 当前歌单ID
+                playlist.name, // 当前歌单名称
+                playlist.description // 当前歌单描述
+            );
+        });
 
         // 存储当前歌单信息
         container.dataset.playlistId = playlist.playlistId || playlist.id;
@@ -763,7 +780,7 @@ async function deleteSelectedSongs() {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ songIds: selectedSongs })
+            body: JSON.stringify({songIds: selectedSongs})
         });
 
         const result = await response.json();
@@ -839,7 +856,7 @@ function createSongRow(song, index, isRecent = false, showCheckbox = false) {
     // 点击复选框选中行
     const checkbox = row.querySelector('.song-checkbox');
     if (checkbox) {
-        checkbox.addEventListener('change', function() {
+        checkbox.addEventListener('change', function () {
             if (this.checked) {
                 row.classList.add('selected');
             } else {
@@ -1213,7 +1230,8 @@ function renderSearchPagination() {
     pagination.appendChild(pageInfo);
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+//  渲染分页
+document.addEventListener('DOMContentLoaded', function () {
     const addBtn = document.getElementById('addToPlaylistBtn');
     const selector = document.getElementById('playlistSelector');
     const closeBtn = selector.querySelector('.close-selector');
@@ -1223,7 +1241,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let selectedPlaylists = new Set();
 
     // 点击加号打开选择器
-    addBtn.addEventListener('click', function() {
+    addBtn.addEventListener('click', function () {
         selector.style.display = 'block';
         if (playlistList.children.length === 0) {
             const userData = JSON.parse(sessionStorage.getItem('userData'));
@@ -1235,7 +1253,7 @@ document.addEventListener('DOMContentLoaded', function() {
     closeBtn.addEventListener('click', closeSelector);
 
     // 确认选择
-    confirmBtn.addEventListener('click', function() {
+    confirmBtn.addEventListener('click', function () {
         if (selectedPlaylists.size > 0) {
             addToPlaylists([...selectedPlaylists]);
             closeSelector();
@@ -1291,7 +1309,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 ${playlist.name} (${playlist.songCount}首)
             `;
 
-            option.addEventListener('click', function(e) {
+            option.addEventListener('click', function (e) {
                 if (e.target.tagName !== 'INPUT') return;
 
                 const checkbox = e.target;
@@ -1314,8 +1332,8 @@ document.addEventListener('DOMContentLoaded', function() {
         Promise.all(playlistIds.map(id =>
             fetch(`http://localhost:8080/playlist/${userData.userId}`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ playlistId: id, songId: currentSong.songId })
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({playlistId: id, songId: currentSong.songId})
             })
         ))
             .then(responses => Promise.all(responses.map(r => r.json())))
@@ -1331,6 +1349,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 });
 
+//  创建&修改歌单模态框
 const createBtn = document.getElementById('createPlaylistButton');
 const modal = document.getElementById('playlistModal');
 const closeBtn = document.getElementById('closeModal');
@@ -1338,42 +1357,74 @@ const cancelBtn = document.getElementById('cancelButton');
 const submitBtn = document.getElementById('submitButton');
 const playlistName = document.getElementById('playlistName');
 const nameError = document.getElementById('nameError');
+const modalTitle = document.getElementById('modalActionTitle');
+const submitButtonText = document.getElementById('submitButtonText');
 
-// 打开模态框
+// 当前操作类型和歌单ID（用于编辑）
+let currentAction = 'create';
+let currentPlaylistId = null;
+
+// 打开模态框（创建）
 createBtn.addEventListener('click', () => {
-    modal.classList.add('active');
-    document.body.style.overflow = 'hidden'; // 禁止背景滚动
+    openModal('create');
 });
+
+// 打开模态框（编辑） - 这个函数需要在你点击编辑按钮时调用
+function openEditModal(playlistId, playlistNameValue, playlistDescValue) {
+    currentAction = 'edit';
+    currentPlaylistId = playlistId;
+    openModal('edit', playlistNameValue, playlistDescValue);
+}
+
+// 通用打开模态框函数
+function openModal(action, name = '', description = '') {
+    if (action === 'create') {
+        modalTitle.textContent = '创建新歌单';
+        submitButtonText.textContent = '创建歌单';
+        currentAction = 'create';
+        currentPlaylistId = null;
+    } else if (action === 'edit') {
+        modalTitle.textContent = '编辑歌单';
+        submitButtonText.textContent = '保存修改';
+    }
+
+    // 填充表单数据
+    playlistName.value = name;
+    document.getElementById('playlistDesc').value = description;
+
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
 
 // 关闭模态框函数
 function closeModal() {
     modal.classList.remove('active');
-    document.body.style.overflow = ''; // 恢复背景滚动
-    nameError.style.display = 'none'; // 隐藏错误信息
-    playlistName.style.borderColor = '#ddd'; // 重置边框颜色
+    document.body.style.overflow = '';
+    nameError.style.display = 'none';
+    playlistName.style.borderColor = '#ddd';
+
+    // 重置表单
+    if (currentAction === 'create') {
+        playlistName.value = '';
+        document.getElementById('playlistDesc').value = '';
+    }
 }
 
-// 通过关闭按钮关闭
+// 关闭事件监听器
 closeBtn.addEventListener('click', closeModal);
-
-// 通过取消按钮关闭
 cancelBtn.addEventListener('click', closeModal);
-
-// 通过背景点击关闭
 modal.addEventListener('click', (e) => {
     if (e.target === modal) {
         closeModal();
     }
 });
-
-// 通过ESC键关闭
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && modal.classList.contains('active')) {
         closeModal();
     }
 });
 
-// 创建歌单提交功能
+// 提交处理
 submitBtn.addEventListener('click', async () => {
     // 验证表单
     if (!playlistName.value.trim()) {
@@ -1387,32 +1438,44 @@ submitBtn.addEventListener('click', async () => {
     nameError.style.display = 'none';
     playlistName.style.borderColor = '#ddd';
 
-    // 获取表单值
     const name = playlistName.value.trim();
     const description = document.getElementById('playlistDesc').value;
     const userData = JSON.parse(sessionStorage.getItem('userData'));
 
-    await showNotification(await createPlaylist(name, description, userData)
-        ? `歌单 "${name}" 创建成功！`
-        : `歌单 "${name}" 创建失败！`);
+    let success = false;
+    let message = '';
 
-    await loadMyPlaylists(userData);
-    // 关闭模态框
-    closeModal();
+    if (currentAction === 'create') {
+        success = await createPlaylist(name, description, userData);
+        message = success ? `歌单 "${name}" 创建成功！` : `歌单 "${name}" 创建失败！`;
+    } else if (currentAction === 'edit') {
+        success = await updatePlaylist(currentPlaylistId, name, description, userData);
+        message = success ? `歌单 "${name}" 更新成功！` : `歌单 "${name}" 更新失败！`;
+    }
 
-    // 清空表单
-    playlistName.value = '';
-    document.getElementById('playlistDesc').value = '';
-    document.getElementById('playlistPrivacy').value = 'public';
+    await showNotification(message);
+    const response = await fetch(`http://localhost:8080/playlist/${currentPlaylistId}/list`);
+    const data = await response.json();
+    await renderPlaylistDetail(data.data);
+    await closeModal();
 });
 
-// 发送请求创建歌单
+// 创建歌单
 async function createPlaylist(name, description, userData) {
-
     const response = await fetch(`http://localhost:8080/playlist/create/${userData.userId}`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, description })
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({name, description})
     });
-    return response.code === 1;
+    return true;
+}
+
+// 更新歌单
+async function updatePlaylist(playlistId, name, description, userData) {
+    const response = await fetch(`http://localhost:8080/playlist/update/${playlistId}`, {
+        method: 'PUT',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({name, description, userId: userData.userId})
+    });
+    return true;
 }

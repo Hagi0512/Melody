@@ -2260,3 +2260,40 @@ body {
         gap: 10px;
     }
 }
+
+.edit-playlist-btn {
+    background: linear-gradient(135deg, #4db6ac 0%, #26a69a 100%);
+    color: white;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 12px rgba(38, 166, 154, 0.3);
+    margin-right: 12px;
+}
+
+.play-all-btn {
+    margin-right: 20px; /* 增加右侧间距 */
+}
+
+
+.edit-playlist-btn:hover {
+    background: linear-gradient(135deg, #26a69a 0%, #00897b 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(38, 166, 154, 0.4);
+}
+
+.edit-playlist-btn:active {
+    transform: translateY(0);
+}
+
+.edit-playlist-btn i {
+    font-size: 0.9em;
+}
+

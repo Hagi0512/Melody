@@ -19,9 +19,9 @@ public class PlaylistController {
 
 
     // 获取用户创建的歌单
-    @GetMapping("/{id}")
-    public Result getPlaylist(@PathVariable int id){
-        List<Playlist> playlists = playlistService.getPlaylist(id);
+    @GetMapping("/{userId}")
+    public Result getPlaylists(@PathVariable int userId){
+        List<Playlist> playlists = playlistService.getPlaylist(userId);
         return Result.success(playlists);
     }
 
@@ -45,5 +45,20 @@ public class PlaylistController {
         String name = requestBody.get("name"), description = requestBody.get("description");
         playlistService.createPlaylist(id, name, description);
         return Result.success();
+    }
+
+    // 修改歌单信息
+    @PutMapping("/update/{id}")
+    public Result updatePlaylist(@PathVariable int id, @RequestBody Map<String, String> requestBody){
+        String name = requestBody.get("name"), description = requestBody.get("description");
+        playlistService.updatePlaylist(id, name, description);
+        return Result.success();
+    }
+
+    // 获取单个歌单
+    @GetMapping("/{id}/list")
+    public Result getPlaylist(@PathVariable int id){
+        Playlist playlist = playlistService.getPlaylistById(id);
+        return Result.success(playlist);
     }
 }

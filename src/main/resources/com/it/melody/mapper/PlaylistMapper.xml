@@ -14,9 +14,21 @@
         values(#{id}, #{name}, #{description})
     </insert>
 
+    <update id="updatePlaylistById">
+        update playlists
+        set name=#{name},description=#{description}
+        where playlist_id=#{id}
+    </update>
+
     <select id="getPlaylistById" resultType="com.it.melody.pojo.Playlist">
         select playlist_id,name,user_id,created_at,description
         from playlists
         where user_id=#{id}
+    </select>
+
+    <select id="getPlaylistByListId" resultType="com.it.melody.pojo.Playlist">
+        select playlist_id,name,user_id,created_at,description
+        from playlists
+        where playlist_id=#{id}
     </select>
 </mapper>

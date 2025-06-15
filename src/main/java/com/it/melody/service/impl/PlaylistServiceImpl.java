@@ -27,12 +27,7 @@ public class PlaylistServiceImpl implements PlaylistService {
     public List<Playlist> getPlaylist(int id) {
         List<Playlist> playlists = playlistMapper.getPlaylistById(id);
         for (Playlist playlist : playlists){
-            playlist.setSongs(songService.getSongsByPlaylistId(playlist.getPlaylistId()));
-            playlist.setSongCount(playlist.getSongs().size());
-            playlist.setUserName(userMapper.getUserById(id));
-            if (!playlist.getSongs().isEmpty()) {
-                playlist.setCover(playlist.getSongs().get(0).getCover());
-            }
+            setPlaylistInfo(playlist);
         }
         return playlists;
     }
@@ -50,5 +45,25 @@ public class PlaylistServiceImpl implements PlaylistService {
     @Override
     public void createPlaylist(Integer id, String name, String description) {
         playlistMapper.addPlaylistByUserId(id, name, description);
+    }
+
+    @Override
+    public void updatePlaylist(int id, String name, String description) {
+        playlistMapper.updatePlaylistById(id, name, description);
+    }
+
+    @Override
+    public Playlist getPlaylistById(int id) {
+        return setPlaylistInfo(playlistMapper.getPlaylistByListId(id));
+    }
+
+    public Playlist setPlaylistInfo(Playlist playlist) {
+        playlist.setSongs(songService.getSongsByPlaylistId(playlist.getPlaylistId()));
+        playlist.setSongCount(playlist.getSongs().size());
+        playlist.setUserName(userMapper.getUserById(playlist.getUserId()));
+        if (!playlist.getSongs().isEmpty()) {
+            playlist.setCover(playlist.getSongs().get(0).getCover());
+        }
+        return playlist;
     }
 }
