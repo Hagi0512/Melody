@@ -15,6 +15,8 @@ public class Playlist {
     private String name;
     private int userId;
     private LocalDateTime createdAt;
+    private String description;
+
     private int songCount;
     private String userName;
     private String cover;

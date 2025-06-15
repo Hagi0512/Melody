@@ -10,7 +10,7 @@
     </insert>
 
     <select id="getPlaylistById" resultType="com.it.melody.pojo.Playlist">
-        select playlist_id,name,user_id,created_at
+        select playlist_id,name,user_id,created_at,description
         from playlists
         where user_id=#{id}
     </select>
