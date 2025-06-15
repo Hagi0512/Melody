@@ -4,9 +4,14 @@
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.it.melody.mapper.PlaylistMapper">
 
+    <insert id="addSongById">
+        insert into playlist_songs(playlist_id,song_id)
+        values(#{id},#{songId})
+    </insert>
+
     <select id="getPlaylistById" resultType="com.it.melody.pojo.Playlist">
         select playlist_id,name,user_id,created_at
         from playlists
-        where playlist_id=#{id}
+        where user_id=#{id}
     </select>
 </mapper>

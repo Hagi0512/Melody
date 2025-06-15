@@ -1609,3 +1609,462 @@ body {
 .page-jump-btn:hover {
     background-color: #e8eaed;
 }
+
+/* 歌单头部整体样式 - 淡蓝色主题 */
+.playlist-header {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    padding: 20px 30px;
+    background: linear-gradient(135deg, rgba(240, 248, 255, 0.9) 0%, rgba(230, 240, 250, 0.95) 100%);
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(100, 150, 200, 0.15);
+    color: #2c3e50;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 30px;
+    border: 1px solid rgba(200, 220, 240, 0.6);
+}
+
+/* 返回按钮样式 - 淡蓝色系 */
+.back-btn {
+    /* 布局定位 */
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 10;
+
+    /* 视觉样式 */
+    background: rgba(100, 160, 220, 0.1);
+    border: 1px solid rgba(100, 160, 220, 0.3);
+    color: #4a6fa8;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+
+    /* 内部元素 */
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+
+    /* 特效 */
+    backdrop-filter: blur(5px);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 6px rgba(100, 150, 200, 0.1);
+}
+
+/* 悬停状态 */
+.back-btn:hover {
+    background: rgba(100, 160, 220, 0.2);
+    border-color: rgba(100, 160, 220, 0.5);
+    box-shadow: 0 3px 8px rgba(100, 150, 200, 0.2);
+}
+
+/* 点击状态 */
+.back-btn:active {
+    transform: scale(0.98);
+    background: rgba(100, 160, 220, 0.15);
+}
+
+/* 图标样式 */
+.back-btn i {
+    font-size: 12px;
+    color: #4a6fa8;
+    transition: transform 0.3s ease;
+}
+
+/* 悬停时图标轻微左移 */
+.back-btn:hover i {
+    transform: translateX(-2px);
+}
+/* 封面容器样式 */
+.cover-container {
+    position: relative;
+    width: 200px;
+    height: 200px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 16px rgba(100, 150, 200, 0.2);
+    transition: transform 0.3s ease;
+    align-self: center;
+    border: 1px solid rgba(200, 220, 240, 0.8);
+}
+
+.cover-container:hover {
+    transform: scale(1.03);
+    box-shadow: 0 10px 20px rgba(100, 150, 200, 0.3);
+}
+
+.playlist-cover {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* 封面悬停播放按钮 - 淡蓝色系 */
+.cover-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(100, 160, 220, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    cursor: pointer;
+}
+
+.cover-overlay i {
+    font-size: 48px;
+    color: rgba(255, 255, 255, 0.9);
+    transition: transform 0.3s ease, color 0.3s ease;
+}
+
+.cover-container:hover .cover-overlay {
+    opacity: 1;
+}
+
+.cover-overlay:hover i {
+    transform: scale(1.1);
+    color: #fff;
+}
+
+/* 歌单信息区域 - 淡蓝色文字 */
+.playlist-info {
+    text-align: center;
+}
+
+.playlist-info h1 {
+    font-size: 2.2rem;
+    margin: 0 0 12px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: #2c3e50;
+}
+
+.playlist-info .description {
+    font-size: 1rem;
+    color: #5a7a9a;
+    margin: 0 auto 20px;
+    max-width: 600px;
+    line-height: 1.5;
+}
+
+/* 元信息样式 - 淡蓝色系 */
+.meta {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+    font-size: 0.9rem;
+    color: #6a8ab0;
+}
+
+.meta span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.meta i {
+    font-size: 0.8em;
+    color: #8aa8c8;
+}
+
+/* 播放全部按钮 - 淡蓝色主按钮 */
+.play-all-btn {
+    background: linear-gradient(135deg, #64b5f6 0%, #42a5f5 100%);
+    color: white;
+    border: none;
+    padding: 12px 32px;
+    border-radius: 30px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 12px rgba(66, 165, 245, 0.3);
+}
+
+.play-all-btn:hover {
+    background: linear-gradient(135deg, #42a5f5 0%, #1e88e5 100%);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(66, 165, 245, 0.4);
+}
+
+.play-all-btn:active {
+    transform: translateY(0);
+}
+
+.play-all-btn i {
+    font-size: 0.9em;
+}
+
+/* 响应式设计 */
+@media (min-width: 768px) {
+    .playlist-header {
+        flex-direction: row;
+        align-items: flex-end;
+        padding: 30px;
+    }
+
+    .cover-container {
+        width: 240px;
+        height: 240px;
+        align-self: flex-end;
+    }
+
+    .playlist-info {
+        text-align: left;
+        flex: 1;
+        padding-left: 30px;
+    }
+
+    .back-btn {
+        top: 15px;
+        right: 15px;
+        padding: 6px 14px;
+    }
+
+    .meta {
+        justify-content: flex-start;
+    }
+
+    .actions {
+        justify-content: flex-start;
+    }
+}
+
+/* 添加水波纹效果 */
+.play-all-btn, .back-btn, .cover-overlay {
+    position: relative;
+    overflow: hidden;
+}
+
+.play-all-btn:after, .back-btn:after, .cover-overlay:after {
+    content: "";
+    display: block;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    background-image: radial-gradient(circle, #fff 10%, transparent 10%);
+    background-repeat: no-repeat;
+    background-position: 50%;
+    transform: scale(10,10);
+    opacity: 0;
+    transition: transform .5s, opacity 1s;
+}
+
+.play-all-btn:active:after, .back-btn:active:after, .cover-overlay:active:after {
+    transform: scale(0,0);
+    opacity: 0.3;
+    transition: 0s;
+}
+
+.playlist-selector {
+    display: none;
+    position: absolute;
+    bottom: 100%;
+    right: 0;
+    width: 280px;
+    background: #f0f8ff; /* 浅蓝色背景 */
+    border-radius: 8px;
+    box-shadow: 0 4px 20px rgba(173, 216, 230, 0.3); /* 浅蓝色阴影 */
+    border: 1px solid #b0e0e6; /* 浅蓝色边框 */
+    z-index: 100;
+}
+
+.selector-header {
+    padding: 12px 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #c6e2ff; /* 更浅的蓝色分隔线 */
+    background: #e6f2ff; /* 浅蓝色标题背景 */
+    border-radius: 8px 8px 0 0;
+    color: #2a5885; /* 深蓝色文字 */
+}
+
+.close-selector {
+    background: none;
+    border: none;
+    color: #4b91d8; /* 蓝色关闭按钮 */
+    font-size: 20px;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close-selector:hover {
+    color: #2a5885; /* 悬停时加深 */
+}
+
+.selector-list {
+    max-height: 300px;
+    overflow-y: auto;
+    background: #f8fcff; /* 最浅的列表背景 */
+}
+
+.playlist-option {
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    color: #3a6ea5; /* 中蓝色文字 */
+    border-bottom: 1px solid #d4e6f8; /* 浅蓝色分隔线 */
+    transition: all 0.2s;
+}
+
+.playlist-option:hover {
+    background: #d8eafc; /* 悬停浅蓝色 */
+}
+
+.playlist-option.selected {
+    background: #c1e1ff; /* 选中状态蓝色 */
+    color: #1a4b8c;
+}
+
+.playlist-option input[type="checkbox"] {
+    margin-right: 10px;
+    accent-color: #4b91d8; /* 复选框蓝色 */
+}
+
+.selector-actions {
+    padding: 12px 16px;
+    border-top: 1px solid #c6e2ff;
+    text-align: right;
+    background: #e6f2ff; /* 与标题同色 */
+    border-radius: 0 0 8px 8px;
+}
+
+#confirmSelection {
+    background: #4b91d8; /* 蓝色按钮 */
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+#confirmSelection:hover {
+    background: #3a7bc8; /* 悬停时加深 */
+}
+
+/* 加载状态样式 */
+.playlist-option.loading {
+    color: #7aa7d8;
+    font-style: italic;
+}
+
+.playlist-option.error {
+    color: #d84b4b;
+}
+
+.song-checkbox {
+    display: none;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+
+.confirm-delete-btn {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.confirm-delete-btn:hover {
+    background-color: #ff1a1a;
+}
+
+.delete-songs-btn {
+    background-color: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 8px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.delete-songs-btn:hover {
+    background-color: #ff1a1a;
+}
+
+/* 删除模式相关样式 */
+.delete-mode .song-row {
+    background-color: rgba(255, 0, 0, 0.05);
+    transition: background-color 0.3s;
+}
+
+.delete-mode .song-row:hover {
+    background-color: rgba(255, 0, 0, 0.1);
+}
+
+.delete-mode .song-row.selected {
+    background-color: rgba(255, 0, 0, 0.2);
+}
+
+.song-selector {
+    display: inline-block;
+    margin-right: 10px;
+}
+
+.song-checkbox {
+    width: 18px;
+    height: 18px;
+    display: none;
+    cursor: pointer;
+    vertical-align: middle;
+    accent-color: #ff4d4d;
+}
+
+/* 按钮样式 */
+.delete-songs-btn,
+.confirm-delete-btn,
+.cancel-delete-btn {
+    background: #ff4d4d;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+    margin-left: 10px;
+    transition: all 0.3s;
+    font-size: 14px;
+}
+
+.delete-songs-btn:hover {
+    background: #e60000;
+}
+
+.confirm-delete-btn {
+    background: #4CAF50;
+}
+
+.confirm-delete-btn:hover {
+    background: #388E3C;
+}
+
+.cancel-delete-btn {
+    background: #9e9e9e;
+}
+
+.cancel-delete-btn:hover {
+    background: #616161;
+}
